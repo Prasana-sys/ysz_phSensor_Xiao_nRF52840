@@ -12,7 +12,11 @@ const uint8_t pHSensorADC = A0;
 
 const uint8_t AfeEnablePin = D7;
 
-static const float VREF = 3.6;
-static const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;
+const float VREF = 3.6;
+const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;
+
+const uint8_t deploymentSwitch = D1;
+const uint8_t stagingSwitch = D2;
+
 
 #endif // CONFIG_H
