@@ -18,5 +18,11 @@ const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;
 const uint8_t deploymentSwitch = D1;
 const uint8_t stagingSwitch = D2;
 
+// Default parameters for measurement readings
+bool continuousScanningDeployment = 0; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only
+uint32_t numberMeasurementsDeployment = 10;
+uint32_t numberMeasurementsPreDeployment = 10;
+uint8_t numberSamplesPerHour = 1; // MAX = 60 (Arbitrary Limit), 60 samples per hour = 1 sample per minute
+uint8_t sampleIntervalPreDeployment = 30; // in seconds, Setting for Pre-Deployment Mode Only
 
 #endif // CONFIG_H

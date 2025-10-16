@@ -15,7 +15,7 @@ int32_t msc_read_cb (uint32_t lba, void* buffer, uint32_t bufsize){
 // Process data in buffer to disk's storage and 
 // return number of written bytes (must be multiple of block size)
 int32_t msc_write_cb (uint32_t lba, uint8_t* buffer, uint32_t bufsize) {
-    digitalWrite(LED_BUILTIN, HIGH);
+    // digitalWrite(LED_GREEN, LOW);
 
     // Note: SPIFLash Bock API: readBlocks/writeBlocks/syncBlocks
     // already include 4K sector caching internally. We don't need to cache it, yahhhh!!
@@ -31,7 +31,7 @@ void msc_flush_cb (void) {
     // clear file system's cache to force refresh
     fatfs.cacheClear();
 
-    // fs_changed = true;
+    fat_fs_changed = true;
 
-    digitalWrite(LED_BUILTIN, LOW);
+    // digitalWrite(LED_GREEN, HIGH);
 }
