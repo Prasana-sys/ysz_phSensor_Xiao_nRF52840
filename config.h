@@ -1,7 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-const uint8_t pHSensorADC = A0;
+#include <Arduino.h>
+
+extern const uint8_t pHSensorADC;
 // const uint8_t refGroundADC = A1;
 // const uint8_t ref3v3ADC = A2;
 
@@ -10,19 +12,19 @@ const uint8_t pHSensorADC = A0;
 
 // Get Die Temperature of nRF52840 but very inaccurate
 
-const uint8_t AfeEnablePin = D7;
+extern const uint8_t AfeEnablePin;
 
-const float VREF = 3.6;
-const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;
+extern const float VREF;
+extern const int ADC_MAX;
 
-const uint8_t deploymentSwitch = D1;
-const uint8_t stagingSwitch = D2;
+extern const uint8_t deploymentSwitch;
+extern const uint8_t stagingSwitch;
 
 // Default parameters for measurement readings
-bool continuousScanningDeployment = 0; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only
-uint32_t numberMeasurementsDeployment = 10;
-uint32_t numberMeasurementsPreDeployment = 10;
-uint8_t numberSamplesPerHour = 1; // MAX = 60 (Arbitrary Limit), 60 samples per hour = 1 sample per minute
-uint8_t sampleIntervalPreDeployment = 30; // in seconds, Setting for Pre-Deployment Mode Only
+extern bool continuousScanningDeployment; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only
+extern uint32_t numberMeasurementsDeployment;
+extern uint32_t numberMeasurementsPreDeployment;
+extern uint8_t numberSamplesPerHour; // MAX = 60 (Arbitrary Limit), 60 samples per hour = 1 sample per minute
+extern uint8_t sampleIntervalPreDeployment; // in seconds, Setting for Pre-Deployment Mode Only
 
 #endif // CONFIG_H

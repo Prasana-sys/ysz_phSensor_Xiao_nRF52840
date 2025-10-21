@@ -12,12 +12,12 @@
 // #define CUSTOM_SPI  SPI
 
 #if defined(CUSTOM_CS) && defined(CUSTOM_SPI)
-  Adafruit_FlashTransport_SPI flashTransport(CUSTOM_CS, CUSTOM_SPI);
+  extern Adafruit_FlashTransport_SPI flashTransport;
 
 #elif defined(ARDUINO_ARCH_ESP32)
   // ESP32 use same flash device that store code.
   // Therefore there is no need to specify the SPI and SS
-  Adafruit_FlashTransport_ESP32 flashTransport;
+  extern Adafruit_FlashTransport_ESP32 flashTransport;
 
 #else
   // On-board external flash (QSPI or SPI) macros should already
@@ -25,10 +25,10 @@
   // - EXTERNAL_FLASH_USE_QSPI
   // - EXTERNAL_FLASH_USE_CS/EXTERNAL_FLASH_USE_SPI
   #if defined(EXTERNAL_FLASH_USE_QSPI)
-    Adafruit_FlashTransport_QSPI flashTransport;
+    extern Adafruit_FlashTransport_QSPI flashTransport;
 
   #elif defined(EXTERNAL_FLASH_USE_SPI)
-    Adafruit_FlashTransport_SPI flashTransport(EXTERNAL_FLASH_USE_CS, EXTERNAL_FLASH_USE_SPI);
+    extern Adafruit_FlashTransport_SPI flashTransport;
 
   #else
     #error No QSPI/SPI flash are defined on your board variant.h !
@@ -42,18 +42,18 @@
 
 // const int flashDevices = 1;
 
-Adafruit_SPIFlash flash(&flashTransport);
+extern Adafruit_SPIFlash flash;
 
 // USB Mass Storage object
-Adafruit_USBD_MSC usb_msc;
+extern Adafruit_USBD_MSC usb_msc;
 
 // file system object from SdFat
-FatFileSystem fatfs;
+extern FatFileSystem fatfs;
 
-FatFile fat_root;
-FatFile fat_file;
+extern FatFile fat_root;
+extern FatFile fat_file;
 
 // Set to true when PC write to flash
-bool fat_fs_changed;
+extern bool fat_fs_changed;
 
 #endif // GLOBALS_H

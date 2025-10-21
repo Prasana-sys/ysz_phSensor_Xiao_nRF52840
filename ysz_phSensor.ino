@@ -11,6 +11,10 @@
 #include "src/utils/src/MSCFlash.h" // read/write/flush callbacks for MSC
 #include "src/modes/src/ChargingState.h"
 #include "src/modes/src/Deployment.h"
+#include "src/modes/src/BLEReadout.h"
+#include "src/modes/src/PreDeployment.h"
+
+#define DEBUG_MODE 1 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
 
 void setup() {
 
@@ -71,26 +75,26 @@ void setup() {
   // STATE SELECTOR
 
   // First, check if USB connected
-  if (NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) {
+  if ((NRF_POWER->USBREGSTATUS & POWER_USBREGSTATUS_VBUSDETECT_Msk) && !DEBUG_MODE) {
     Serial.println("USB connected, entering Charging State");
-    runChargingState (); // Check if data connection is active inside here using TinyUSBDevice.mounted()
+    runChargingState(); // Check if data connection is active inside here using TinyUSBDevice.mounted()
   } 
-  else if (!digitalRead(deploymentSwitch)) {
+  else if (!digitalRead(deploymentSwitch) || DEBUG_MODE == 1) {
     Serial.println("Entering Deployment State");
-    runDeploymentState ();
+    runDeploymentState();
   }
-  else if (!digitalRead(stagingSwitch)) {
+  else if (!digitalRead(stagingSwitch) || DEBUG_MODE) {
     Serial.println("Entering Staging State");
 
     // Check if log.csv exists
-    if (fatfs.exists("/log.csv")) {
+    if (fatfs.exists("/log.csv") || DEBUG_MODE == 2) {
       Serial.println("log.csv found on flash!");
       Serial.println("Entering BLE Readout State");
-      runBLEReadoutState ();
+      runBLEReadoutState();
     } else {
       Serial.println("log.csv not found on flash.");
       Serial.println("Entering Pre-Deployment State");
-      runPreDeploymentState ();
+      runPreDeploymentState();
     }
   }
   else {
