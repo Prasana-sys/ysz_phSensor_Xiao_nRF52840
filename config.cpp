@@ -2,7 +2,9 @@
 
 const uint8_t pHSensorADC = A0;
 
-const uint8_t AfeEnablePin = D7;
+const uint8_t afeEnablePin = D7;
+
+const uint8_t chargeLED = 23;
 
 const float VREF = 3.6;
 const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;

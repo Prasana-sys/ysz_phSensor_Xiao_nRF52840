@@ -9,10 +9,11 @@ extern const uint8_t pHSensorADC;
 
 // BAT Voltage read pin at Pin 32 PIN_VBAT
 // Put VBAT_ENABLE to output sink (low) to read PIN_VBAT
+extern const uint8_t chargeLED; // P0_17 = 17  D23   GREEN CHARGE LED
 
 // Get Die Temperature of nRF52840 but very inaccurate
 
-extern const uint8_t AfeEnablePin;
+extern const uint8_t afeEnablePin;
 
 extern const float VREF;
 extern const int ADC_MAX;
