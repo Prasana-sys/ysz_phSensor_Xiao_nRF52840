@@ -12,7 +12,17 @@ float getBattVoltage() {
 
   Vbatt = (Vadc/16.0) * ((2.961 * VREF) / ADC_MAX); // Resistance ratio 2.961
   return Vbatt;
-} 
+}
+
+void getBattVoltage(float& Vbatt) {
+  uint16_t Vadc = 0;
+
+  for (int i = 0; i < 16; i++) { // Averaging over 16 samples
+    Vadc = Vadc + analogRead(PIN_VBAT);
+  }
+
+  Vbatt = (Vadc/16.0) * ((2.961 * VREF) / ADC_MAX); // Resistance ratio 2.961
+}
 
 // // PLC timing (for 60 Hz mains)
 // const uint32_t PLC_1_US  = 16667; // 1 PLC = 16.67 ms

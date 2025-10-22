@@ -17,7 +17,14 @@ void runDeploymentState () {
 
   if (!continuousScanningDeployment){ // Limited Scanning
     for (int sample = 0; sample < numberMeasurementsDeployment; sample++) {
+      float phVal, VpH, Vbatt, dieTemp;
 
+      getBattVoltage(Vbatt);
+      getpHValue(phVal, VpH, dieTemp);
+
+      // Print to log file using buffer
+
+      // Put to sleep according to number of samples per hour
     }
   }
   else { // Continuous scanning
