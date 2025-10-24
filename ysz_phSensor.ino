@@ -33,7 +33,7 @@ void setup() {
   NRF_POWER->DCDCEN = 1;            // Enable DC/DC converter for REG1 stage, switched to internal 1.3 V core voltage
                                     // POWER SAVINGS!!!
 
-  Bluefruit.begin(); // Need SoftDevice for sd_power_system_off() in deep sleep
+  // Bluefruit.begin(); // Need SoftDevice for sd_power_system_off() in deep sleep
 
   pinMode(VBAT_ENABLE, OUTPUT);
   digitalWrite(VBAT_ENABLE, LOW); // Set low to read battery, never set high
@@ -51,24 +51,30 @@ void setup() {
   pinMode(stagingSwitch, INPUT_PULLUP);
 
   flash.begin();
-
-  // Set disk vendor id, product id and revision with string up to 8, 16, 4 characters respectively
-  usb_msc.setID("YSZ_PH", "External Flash", "1.0");
-
-  // Set callback
-  usb_msc.setReadWriteCallback(msc_read_cb, msc_write_cb, msc_flush_cb);
-
-  // Set disk size, block size should be 512 regardless of spi flash page size
-  usb_msc.setCapacity(flash.size()/512, 512);
-
-  // MSC is ready for read/write
-  usb_msc.setUnitReady(true);
   
-  usb_msc.begin();
+  if (!DEBUG_MODE){
+    // Set disk vendor id, product id and revision with string up to 8, 16, 4 characters respectively
+    usb_msc.setID("YSZ_PH", "External Flash", "1.0");
+
+    // Set callback
+    usb_msc.setReadWriteCallback(msc_read_cb, msc_write_cb, msc_flush_cb);
+
+    // Set disk size, block size should be 512 regardless of spi flash page size
+    usb_msc.setCapacity(flash.size()/512, 512);
+
+    // MSC is ready for read/write
+    usb_msc.setUnitReady(true);
+    
+    usb_msc.begin();
+  }
 
   // USB_MSC must begin before starting serial
   Serial.begin(115200);
   while ( !Serial ) delay(100); // wait for UART connection (For debug/testing only)
+
+  Serial.print("Reset reason: 0x");
+  Serial.println(NRF_POWER->RESETREAS, HEX);
+  NRF_POWER->RESETREAS = 0xFFFFFFFF; // clear flags
 
   // Init file system on the flash
   fatfs.begin(&flash);

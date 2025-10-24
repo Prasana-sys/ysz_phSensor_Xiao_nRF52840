@@ -35,6 +35,7 @@ void lightSleep(uint32_t sleepDuration) {
 
   if ( !fat_root.open("/") ){
     Serial.println("open root failed");
+    while(1);
   }
 
   Serial.println("Woke up from light sleep mode.");
@@ -58,4 +59,7 @@ void deepSleep() {
   SPI_2.end();
 
   sd_power_system_off(); // Will never wake-up from here except external reset
+  NRF_POWER->SYSTEMOFF = 1;
+
+  Serial.println("Woke up from deep sleep mode."); // Should never reach here
 }

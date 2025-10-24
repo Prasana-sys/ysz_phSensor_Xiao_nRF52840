@@ -2,6 +2,7 @@
 
 #include "../../utils/src/SettingsManager.h"
 #include "../../../config.h"
+#include "../../../globals.h"
 #include "../../sensors/src/BatteryMonitor.h"
 #include "../../sensors/src/phSensor.h"
 #include "../../utils/src/Logger.h"
@@ -24,20 +25,26 @@ void runDeploymentState () {
       float phVal, VpH, Vbatt, dieTemp;
 
       getBattVoltage(Vbatt);
+      Serial.printf("Battery Voltage: %.3f V\n", Vbatt);
       getpHValue(phVal, VpH, dieTemp);
+      Serial.printf("pH Value: %.3f, pH Voltage: %.3f V, Die Temperature: %.2f C\n", phVal, VpH, dieTemp);
 
       if (Vbatt > BATT_LOW_VOLTAGE){
         logSaveData(millis() - start_ms, phVal, VpH, dieTemp, Vbatt);
+        // Put to sleep according to sample interval
+        if (sample < numberMeasurementsDeployment - 1) {
+          Serial.println("Sleeping until next measurement...");
+          lightSleep(sampleIntervalDeployment);
+        }
       }
       else {
         Serial.println("Battery Low Voltage! Stopping further measurements.");
         deepSleep(); // Sleep indefinitely
       }
-      
-      // Put to sleep according to sample interval
-      lightSleep(sampleIntervalDeployment);
     }
 
+    Serial.println("Completed all measurements in limited scanning mode.");
+    delay(1000);
     deepSleep(); // Sleep indefinitely after measurements are done
   }
   else { // Continuous scanning

@@ -18,7 +18,7 @@ void getBattVoltage(float& Vbatt) {
   uint16_t Vadc = 0;
 
   for (int i = 0; i < 16; i++) { // Averaging over 16 samples
-    Vadc = Vadc + analogRead(PIN_VBAT);
+    Vadc += analogRead(PIN_VBAT);
   }
 
   Vbatt = (Vadc/16.0) * ((2.961 * VREF) / ADC_MAX); // Resistance ratio 2.961

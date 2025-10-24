@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-char line[80]; // Internal buffer
+char buf[100]; // Internal buffer
 
 char *trim(char *str) {
   while (isspace(*str)) str++;
@@ -22,8 +22,8 @@ void loadSettings() {
     return;
   }
 
-  while (fat_file.fgets(line, sizeof(line)) > 0) {
-    char *s = trim(line);
+  while (fat_file.fgets(buf, sizeof(buf)) > 0) {
+    char *s = trim(buf);
     if (*s == '#' || *s == ';' || *s == '\0') continue;
 
     char *eq = strchr(s, '=');
@@ -51,8 +51,6 @@ void saveSettings() {
     Serial.println("Failed to open settings.ini for writing!");
     return;
   }
-
-  char buf[64];
 
   snprintf(buf, sizeof(buf), "continuousScanningDeployment=%d\n", continuousScanningDeployment);
   fat_file.write(buf);
