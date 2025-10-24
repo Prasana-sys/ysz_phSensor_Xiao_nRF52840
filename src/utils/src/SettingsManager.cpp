@@ -35,7 +35,7 @@ void loadSettings() {
     if (!strcmp(key, "continuousScanningDeployment")) continuousScanningDeployment = atoi(val);
     else if (!strcmp(key, "numberMeasurementsDeployment")) numberMeasurementsDeployment = atol(val);
     else if (!strcmp(key, "numberMeasurementsPreDeployment")) numberMeasurementsPreDeployment = atol(val);
-    else if (!strcmp(key, "numberSamplesPerHour")) numberSamplesPerHour = atoi(val);
+    else if (!strcmp(key, "sampleIntervalDeployment")) sampleIntervalDeployment = atol(val);
     else if (!strcmp(key, "sampleIntervalPreDeployment")) sampleIntervalPreDeployment = atoi(val);
   }
 
@@ -63,7 +63,7 @@ void saveSettings() {
   snprintf(buf, sizeof(buf), "numberMeasurementsPreDeployment=%lu\n", numberMeasurementsPreDeployment);
   fat_file.write(buf);
 
-  snprintf(buf, sizeof(buf), "numberSamplesPerHour=%d\n", numberSamplesPerHour);
+  snprintf(buf, sizeof(buf), "sampleIntervalDeployment=%lu\n", sampleIntervalDeployment);
   fat_file.write(buf);
 
   snprintf(buf, sizeof(buf), "sampleIntervalPreDeployment=%d\n", sampleIntervalPreDeployment);
@@ -82,13 +82,13 @@ void testSettingsManager () {
   Serial.printf("continuousScanning = %d\n", continuousScanningDeployment);
   Serial.printf("numMeasurements = %lu\n", numberMeasurementsDeployment);
   Serial.printf("numMeasurementsPreDeployment = %lu\n", numberMeasurementsPreDeployment);
-  Serial.printf("samplesPerHour = %d\n", numberSamplesPerHour);
+  Serial.printf("sampleIntervalDeployment = %lu\n", sampleIntervalDeployment);
   Serial.printf("sampleInterval = %d\n", sampleIntervalPreDeployment);
 
   continuousScanningDeployment = 0; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only
   numberMeasurementsDeployment = 10;
   numberMeasurementsPreDeployment = 10;
-  numberSamplesPerHour = 1; // MAX = 60 (Arbitrary Limit), 60 samples per hour = 1 sample per minute
+  sampleIntervalDeployment = 30; // in seconds, Setting for Deployment Mode Only
   sampleIntervalPreDeployment = 30; // in seconds, Setting for Pre-Deployment Mode Only
 
   /* When you write to the external flash through FatFs while the USB mass storage device (MSC) is mounted to your computer, there are two separate caching layers involved:

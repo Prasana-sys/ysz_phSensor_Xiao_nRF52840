@@ -10,6 +10,7 @@ extern const uint8_t pHSensorADC;
 // BAT Voltage read pin at Pin 32 PIN_VBAT
 // Put VBAT_ENABLE to output sink (low) to read PIN_VBAT
 extern const uint8_t chargeLED; // P0_17 = 17  D23   GREEN CHARGE LED
+extern const float BATT_LOW_VOLTAGE;
 
 // Get Die Temperature of nRF52840 but very inaccurate
 
@@ -25,7 +26,7 @@ extern const uint8_t stagingSwitch;
 extern bool continuousScanningDeployment; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only
 extern uint32_t numberMeasurementsDeployment;
 extern uint32_t numberMeasurementsPreDeployment;
-extern uint8_t numberSamplesPerHour; // MAX = 60 (Arbitrary Limit), 60 samples per hour = 1 sample per minute
+extern uint32_t sampleIntervalDeployment; // in seconds, Setting for Deployment Mode Only
 extern uint8_t sampleIntervalPreDeployment; // in seconds, Setting for Pre-Deployment Mode Only
 
 #endif // CONFIG_H

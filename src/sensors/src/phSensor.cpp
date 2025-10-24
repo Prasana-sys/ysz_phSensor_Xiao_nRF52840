@@ -1,6 +1,7 @@
 #include "phSensor.h"
 
 #include "../../../config.h"
+#include "TemperatureSensor.h"
 
 float getpHValue() {
   
@@ -23,9 +24,13 @@ float getpHVoltage() {
 void getpHValue(float& pHVal, float& VpH, float& dieTemp) {
   
   // Just return voltage for now
+  getTemperature(dieTemp);
+  getpHVoltage(VpH);
+
+  // Use Nernst equation later to convert voltage to pH
   pHVal = 0;
-  dieTemp = 0;
-  return getpHVoltage(VpH);
+
+  return;
 }
 
 void getpHVoltage(float& VpH) {
