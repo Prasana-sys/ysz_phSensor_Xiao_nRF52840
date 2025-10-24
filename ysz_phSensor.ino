@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include <Adafruit_TinyUSB.h> // included for Serial to compile
+#include <bluefruit.h>
 
 #include "config.h"
 #include "globals.h"
@@ -31,6 +32,8 @@ void setup() {
   // Enable DC-DC converter
   NRF_POWER->DCDCEN = 1;            // Enable DC/DC converter for REG1 stage, switched to internal 1.3 V core voltage
                                     // POWER SAVINGS!!!
+
+  Bluefruit.begin(); // Need SoftDevice for sd_power_system_off() in deep sleep
 
   pinMode(VBAT_ENABLE, OUTPUT);
   digitalWrite(VBAT_ENABLE, LOW); // Set low to read battery, never set high
