@@ -4,6 +4,7 @@
 #include "Adafruit_SPIFlash.h"
 #include "Adafruit_TinyUSB.h"
 #include "SdFat.h"
+#include "bluefruit.h"
 
 // const uint8_t chargeLED = 23; // P0_17 = 17  D23   GREEN CHARGE LED
 
@@ -55,5 +56,16 @@ extern FatFile fat_file;
 
 // Set to true when PC write to flash
 extern bool fat_fs_changed;
+
+extern BLEService pms;
+extern BLECharacteristic pmsLogEntry;
+
+extern BLEService cs;
+extern BLECharacteristic csCommand;
+extern BLECharacteristic csContScanDeploy;
+extern BLECharacteristic csNumMeasDeploy;
+extern BLECharacteristic csNumMeasPreDeploy;
+extern BLECharacteristic csSampleIntervalDeploy;
+extern BLECharacteristic csSampleIntervalPreDeploy;
 
 #endif // GLOBALS_H

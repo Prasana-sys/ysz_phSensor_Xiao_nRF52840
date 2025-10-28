@@ -38,6 +38,8 @@ void logSaveData(uint32_t timestamp_ms, float pHVal, float VpH, float dieTemp, f
   int cx = fmt_hms(timestamp_ms, buf, sizeof(buf));
 
   snprintf(buf+cx, sizeof(buf)-cx, ",%.3f,%.3f,%.2f,%.3f\n", pHVal, VpH, dieTemp, Vbatt);
+  // Use below line if implementing additional characteristics in future
+  // snprintf(buf+cx, sizeof(buf)-cx, ",%.3f,%.3f,%.2f,%.3f,%lu\n", pHVal, VpH, dieTemp, Vbatt, timestamp_ms);
   fat_file.write(buf);
 
   // Close the file
