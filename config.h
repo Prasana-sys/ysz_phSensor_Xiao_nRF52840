@@ -20,7 +20,7 @@ extern const float VREF;
 extern const int ADC_MAX;
 
 extern const uint8_t deploymentSwitch;
-extern const uint8_t stagingSwitch;
+// extern const uint8_t stagingSwitch;
 
 // Default parameters for measurement readings
 extern bool continuousScanningDeployment; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only

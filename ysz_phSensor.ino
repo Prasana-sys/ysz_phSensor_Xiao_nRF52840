@@ -15,7 +15,7 @@
 #include "src/modes/src/BLEReadout.h"
 #include "src/modes/src/PreDeployment.h"
 
-#define DEBUG_MODE 1 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
+#define DEBUG_MODE 3 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
 
 void setup() {
 
@@ -47,10 +47,10 @@ void setup() {
   pinMode(afeEnablePin, OUTPUT);
   digitalWrite(afeEnablePin, LOW);
 
-  pinMode(deploymentSwitch, INPUT_PULLUP); // SPDT switch to GND when active
-  pinMode(stagingSwitch, INPUT_PULLUP);
+  pinMode(deploymentSwitch, INPUT_PULLUP); // SPST switch to GND when active
+  // pinMode(stagingSwitch, INPUT_PULLUP);
 
-  flash.begin();
+  flash.begin(my_flash_devices, flashDevices);
   
   if (!DEBUG_MODE){
     // Set disk vendor id, product id and revision with string up to 8, 16, 4 characters respectively
@@ -96,25 +96,26 @@ void setup() {
     Serial.println("Entering Deployment State");
     runDeploymentState();
   }
-  else if (!digitalRead(stagingSwitch) || DEBUG_MODE) {
+  // else if (!digitalRead(stagingSwitch) || DEBUG_MODE) {
+  else {
     Serial.println("Entering Staging State");
 
     // Check if log.csv exists
-    if (fatfs.exists("/log.csv") || DEBUG_MODE == 2) {
+    if (!fatfs.exists("/log.csv") || DEBUG_MODE == 3) {
+      Serial.println("log.csv not found on flash.");
+      Serial.println("Entering Pre-Deployment State");
+      setupPreDeploymentState();
+    }
+    else {
       Serial.println("log.csv found on flash!");
       Serial.println("Entering BLE Readout State");
       runBLEReadoutState();
-    } else {
-      Serial.println("log.csv not found on flash.");
-      Serial.println("Entering Pre-Deployment State");
-      runPreDeploymentState();
     }
   }
-  else {
-    Serial.println("Entering Testing State");
-    // Fall through to testing state
-  }
-
+  // else {
+  //   Serial.println("Entering Testing State");
+  //   // Fall through to testing state
+  // }
 
 }
 

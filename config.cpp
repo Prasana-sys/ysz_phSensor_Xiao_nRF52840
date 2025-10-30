@@ -11,7 +11,7 @@ const float VREF = 3.6;
 const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;
 
 const uint8_t deploymentSwitch = D1;
-const uint8_t stagingSwitch = D2;
+// const uint8_t stagingSwitch = D2;
 
 bool continuousScanningDeployment = 1; // Default = 0
 uint32_t numberMeasurementsDeployment = 11; // Default = 10

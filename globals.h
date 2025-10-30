@@ -36,12 +36,20 @@
   #endif
 #endif
 
-// No need for this as internal library files should have this device to use as default
-// static const SPIFlash_Device_t my_flash_devices[] = {
-//     P25Q16H,
-// };
+#define P25Q16H                                                                \
+  {                                                                            \
+    .total_size = (1 << 21), /* 2 MiB */                                       \
+        .start_up_time_us = 5000, .manufacturer_id = 0x85,                     \
+    .memory_type = 0x60, .capacity = 0x15, .max_clock_speed_mhz = 104,         \
+    .quad_enable_bit_mask = 0x02, .has_sector_protection = false,              \
+    .supports_fast_read = true, .supports_qspi = true,                         \
+    .supports_qspi_writes = true, .write_status_register_split = false,        \
+    .single_status_byte = false, .is_fram = false,                             \
+  }
 
-// const int flashDevices = 1;
+extern const SPIFlash_Device_t my_flash_devices[];
+
+extern const int flashDevices;
 
 extern Adafruit_SPIFlash flash;
 

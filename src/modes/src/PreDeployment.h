@@ -1,6 +1,7 @@
 #ifndef PREDEPLOYMENT_H
 #define PREDEPLOYMENT_H
 
-void runPreDeploymentState ();
+void setupPreDeploymentState ();
+void runPreDeploymentLoop ();
 
 #endif // PREDEPLOYMENT_H

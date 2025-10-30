@@ -15,6 +15,12 @@
 
 Adafruit_SPIFlash flash(&flashTransport);
 
+const SPIFlash_Device_t my_flash_devices[] = {
+    P25Q16H,
+};
+
+const int flashDevices = 1;
+
 Adafruit_USBD_MSC usb_msc;
 FatFileSystem fatfs;
 FatFile fat_root;
