@@ -4,7 +4,7 @@ const uint8_t pHSensorADC = A0;
 
 const uint8_t afeEnablePin = D7;
 
-const uint8_t chargeLED = 23;
+const uint8_t chargeLED = 23; // LOW for charging, HIGH not charging
 const float BATT_LOW_VOLTAGE = 0.0; // Will need adjustment
 
 const float VREF = 3.6;

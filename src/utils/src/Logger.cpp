@@ -1,6 +1,7 @@
 #include "Logger.h"
 
 #include "../../../globals.h"
+#include "tools.h"
 
 // --- format elapsed time as hh:mm:ss ---
 String fmt_hms(uint32_t ms) {
@@ -12,16 +13,6 @@ String fmt_hms(uint32_t ms) {
   char buf[16];
   sprintf(buf, "%02d:%02d:%02d", h, m, s);
   return String(buf);
-}
-
-// --- format elapsed time as hh:mm:ss ---
-int fmt_hms(uint32_t ms, char* buffer, size_t bufferSize) {
-  uint32_t total_s = ms / 1000;
-  int h = total_s / 3600;
-  int m = (total_s % 3600) / 60;
-  int s = total_s % 60;
-
-  return snprintf(buffer, bufferSize,"%02d:%02d:%02d", h, m, s);
 }
 
 void logSaveData(uint32_t timestamp_ms, float pHVal, float VpH, float dieTemp, float Vbatt) {

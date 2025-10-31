@@ -40,7 +40,8 @@ void runPreDeploymentLoop () {
     // Put to sleep according to sample interval
     if (sample < numberMeasurementsPreDeployment - 1) {
       Serial.println("Sleeping until next measurement...");
-      lightSleep(sampleIntervalPreDeployment);
+      // lightSleep(sampleIntervalPreDeployment);
+      delay(sampleIntervalPreDeployment * 1000);
     }
   }
 

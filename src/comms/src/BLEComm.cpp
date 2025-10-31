@@ -5,7 +5,7 @@
 
 #include "../../modes/src/PreDeployment.h"
 #include "../../utils/src/SettingsManager.h"
-#include "../../utils/src/Logger.h"
+#include "../../utils/src/tools.h"
 
 uint16_t webappConnHandle = 0xFFFF; // Invalid handle
 
