@@ -29,7 +29,7 @@ void lightSleep(uint32_t sleepDuration) {
   digitalWrite(PIN_QSPI_CS, HIGH);
   SPI_2.end();
 
-  flash.begin();
+  flash.begin(my_flash_devices, flashDevices);
   fatfs.begin(&flash);
   Serial.println("Mounted filesystem!");
 
