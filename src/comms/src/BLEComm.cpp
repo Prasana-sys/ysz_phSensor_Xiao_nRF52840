@@ -11,6 +11,7 @@
 uint16_t webappConnHandle = 0xFFFF; // Invalid handle
 
 void setupServicesPreDeployment() {
+  Bluefruit.configPrphBandwidth(BANDWIDTH_MAX); // Set max MTU to 247 bytes
   Bluefruit.begin(1, 0);
   Bluefruit.setName("YSZ pH Sensor");
   Bluefruit.Periph.setConnectCallback(connect_callback);
@@ -103,6 +104,7 @@ void startAdvPreDeployment(void)
 }
 
 void setupServicesReadout(void) {
+  Bluefruit.configPrphBandwidth(BANDWIDTH_MAX); // Set max MTU to 247 bytes
   Bluefruit.begin(1, 0);
   Bluefruit.setName("YSZ pH Sensor");
   Bluefruit.Periph.setConnectCallback(connect_callback);

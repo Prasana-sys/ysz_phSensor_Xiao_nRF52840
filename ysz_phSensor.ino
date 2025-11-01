@@ -87,6 +87,8 @@ void setup() {
     while(1);
   }
 
+  fat_root.close();
+
   // STATE SELECTOR
 
   // First, check if USB connected

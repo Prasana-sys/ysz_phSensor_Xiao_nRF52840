@@ -25,7 +25,7 @@ Adafruit_USBD_MSC usb_msc;
 FatFileSystem fatfs;
 FatFile fat_root;
 FatFile fat_file;
-bool fat_fs_changed = false;
+bool fat_fs_changed = true; // // to print contents initially
 
 /* GATT Services and Characteristics UUIDs
 

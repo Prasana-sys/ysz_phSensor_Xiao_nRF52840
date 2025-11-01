@@ -31,6 +31,13 @@ void runBLEReadoutLoop () {
   while (fat_file.fgets(buf, sizeof(buf)) > 0) {
     char *s = trim(buf);
     
+    // Add newline if not present at end of each log data in case WebBluetooth can't do max MTU
+    size_t len = strlen(s);
+    if (len == 0 || s[len - 1] != '\n') {
+      s[len++] = '\n';
+      s[len] = '\0';
+    }
+
     indicateData(s);
   }
   
