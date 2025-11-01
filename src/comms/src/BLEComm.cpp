@@ -4,13 +4,15 @@
 #include "../../../config.h"
 
 #include "../../modes/src/PreDeployment.h"
+#include "../../modes/src/BLEReadout.h"
 #include "../../utils/src/SettingsManager.h"
 #include "../../utils/src/tools.h"
 
 uint16_t webappConnHandle = 0xFFFF; // Invalid handle
 
-void setupServices() {
+void setupServicesPreDeployment() {
   Bluefruit.begin(1, 0);
+  Bluefruit.setName("YSZ pH Sensor");
   Bluefruit.Periph.setConnectCallback(connect_callback);
   Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
 
@@ -71,7 +73,7 @@ void setupServices() {
   csSampleIntervalPreDeploy.setWriteCallback(PreDeploymentSampleIntervalPreDeployWriteCallback);
 }
 
-void startAdv(void)
+void startAdvPreDeployment(void)
 {
   // Advertising packet
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
@@ -100,10 +102,66 @@ void startAdv(void)
   Bluefruit.Advertising.start(0);                // 0 = Don't stop advertising after n seconds  
 }
 
+void setupServicesReadout(void) {
+  Bluefruit.begin(1, 0);
+  Bluefruit.setName("YSZ pH Sensor");
+  Bluefruit.Periph.setConnectCallback(connect_callback);
+  Bluefruit.Periph.setDisconnectCallback(disconnect_callback);
+
+  pms.begin();
+
+  // Properties = Read + Indicate
+  // Permission = Open to read, cannot write
+  pmsLogEntry.setProperties(CHR_PROPS_READ | CHR_PROPS_INDICATE);
+  pmsLogEntry.setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
+  pmsLogEntry.setMaxLen(128);
+  pmsLogEntry.begin();
+  pmsLogEntry.write8(0xFF); // Initial dummy value
+
+  // cs.begin();
+
+  // Properties = Read + Write + Indicate
+  // Permission = Open to read, Open to write
+  csCommand.setProperties(CHR_PROPS_READ | CHR_PROPS_WRITE | CHR_PROPS_INDICATE);
+  csCommand.setPermission(SECMODE_OPEN, SECMODE_OPEN);
+  csCommand.setFixedLen(1);
+  csCommand.begin();
+  csCommand.setWriteCallback(ReadoutCommandWriteCallback);
+  csCommand.write8(0xFF); // Initial dummy value
+}
+
+void startAdvReadout(void) {
+  // Advertising packet
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addTxPower();
+
+  // Include PMS and CS Service UUIDs
+  Bluefruit.Advertising.addService(pms);
+  Bluefruit.Advertising.addService(cs);
+
+  // Secondary Scan Response packet (optional)
+  // Since there is no room for 'Name' in Advertising packet
+  Bluefruit.ScanResponse.addName();
+  
+  /* Start Advertising
+   * - Enable auto advertising if disconnected
+   * - Interval:  fast mode = 20 ms, slow mode = 152.5 ms
+   * - Timeout for fast mode is 30 seconds
+   * - Start(timeout) with timeout = 0 will advertise forever (until connected)
+   * 
+   * For recommended advertising interval
+   * https://developer.apple.com/library/content/qa/qa1931/_index.html   
+   */
+  Bluefruit.Advertising.restartOnDisconnect(true);
+  Bluefruit.Advertising.setInterval(32, 244);    // in unit of 0.625 ms
+  Bluefruit.Advertising.setFastTimeout(30);      // number of seconds in fast mode
+  Bluefruit.Advertising.start(0);                // 0 = Don't stop advertising after n seconds
+}
+
 // callback invoked when central connects
 void connect_callback(uint16_t conn_handle)
 {
-  Serial.println("BLE Connected for Pre-Deployment configuration.");
+  Serial.println("Webapp Connected.");
   webappConnHandle = conn_handle;
 
   // lsbLED.write8(0x01);
@@ -127,7 +185,7 @@ void connect_callback(uint16_t conn_handle)
  */
 void disconnect_callback(uint16_t conn_handle, uint8_t reason)
 {
-  Serial.println("BLE Disconnected from Pre-Deployment configuration.");
+  Serial.println("Webapp Disconnected.");
   webappConnHandle = 0xFFFF; // Invalidate handle
   // (void) conn_handle;
   // (void) reason;
@@ -156,8 +214,8 @@ void PreDeploymentCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr
       csSampleIntervalPreDeploy.write8(sampleIntervalPreDeployment);
       break;
 
-    case 0x02:  // CONTINUE TO DEPLOYMENT
-      Serial.println("BLE Command: CONTINUE TO DEPLOYMENT");
+    case 0x02:  // CONTINUE TO PRE-DEPLOYMENT
+      Serial.println("BLE Command: CONTINUE TO PRE-DEPLOYMENT");
       saveSettings();
       runPreDeploymentLoop(); // Exit function to transition to sending measurements
       break;
@@ -232,8 +290,29 @@ void PreDeploymentSampleIntervalPreDeployWriteCallback(uint16_t conn_hdl, BLECha
   chr->write8(sampleIntervalPreDeployment);
 }
 
+void ReadoutCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len) {
+  if (len > 1) return;
+  uint8_t cmd = data[0];
+
+  switch (cmd) {
+    case 0x04:  // PING MODE
+      Serial.println("BLE Command: PING MODE");
+      chr->indicate8(0xCD);              // Readout Mode (0xCD)
+      break;
+
+    case 0x12: // START DATA TRANSFER
+      Serial.println("BLE Command: START DATA TRANSFER");
+      runBLEReadoutLoop(); // Exit function to transition to sending measurements
+      break;
+
+    default:
+      Serial.print("Unknown command received: 0x");
+      Serial.println(cmd, HEX);
+      break;
+  }
+}
+
 void indicateData(uint32_t timestamp_ms, float pHVal, float VpH, float dieTemp, float Vbatt) {
-  // Open log file in write append create mode
   if ( !( Bluefruit.connected(webappConnHandle) && pmsLogEntry.indicateEnabled(webappConnHandle) ) ) {
     Serial.println("Failed to indicate data!");
     digitalWrite(LED_RED, LOW);
@@ -253,4 +332,31 @@ void indicateData(uint32_t timestamp_ms, float pHVal, float VpH, float dieTemp, 
   Serial.println("Data sent to webapp");
   Serial.print("Logged Data: ");
   Serial.print(buf);
+}
+
+void indicateData(const char* dataStr) {
+  if ( !( Bluefruit.connected(webappConnHandle) && pmsLogEntry.indicateEnabled(webappConnHandle) ) ) {
+    Serial.println("Failed to indicate data!");
+    digitalWrite(LED_RED, LOW);
+    return;
+  }
+
+  pmsLogEntry.indicate(webappConnHandle, dataStr);
+
+  Serial.println("Data sent to webapp");
+  Serial.print("Logged Data: ");
+  Serial.print(dataStr);
+}
+
+void indicateNoData(void) {
+  if ( !( Bluefruit.connected(webappConnHandle) && pmsLogEntry.indicateEnabled(webappConnHandle) ) ) {
+    Serial.println("Failed to indicate no data!");
+    digitalWrite(LED_RED, LOW);
+    return;
+  }
+
+  const char* msg = "NO DATA\n";
+  pmsLogEntry.indicate(webappConnHandle, msg);
+
+  Serial.println("No data indicated to webapp");
 }

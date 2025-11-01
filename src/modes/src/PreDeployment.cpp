@@ -15,11 +15,11 @@ void setupPreDeploymentState () {
 
   // Setup BLE services and characteristics
   Serial.println("Setting up BLE services for Pre-Deployment configuration...");
-  setupServices();
+  setupServicesPreDeployment();
 
   // Setup the advertising packet(s)
   Serial.println("Setting up the advertising");
-  startAdv();
+  startAdvPreDeployment();
 
   Serial.println("Waiting for BLE connection for Pre-Deployment configuration...");
 }

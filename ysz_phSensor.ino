@@ -15,7 +15,7 @@
 #include "src/modes/src/BLEReadout.h"
 #include "src/modes/src/PreDeployment.h"
 
-#define DEBUG_MODE 3 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
+#define DEBUG_MODE 2 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
 
 void setup() {
 
@@ -33,7 +33,9 @@ void setup() {
   NRF_POWER->DCDCEN = 1;            // Enable DC/DC converter for REG1 stage, switched to internal 1.3 V core voltage
                                     // POWER SAVINGS!!!
 
-  // Bluefruit.begin(); // Need SoftDevice for sd_power_system_off() in deep sleep
+  // Bluefruit.begin(); // Need to use SoftDevice when Bluefruit begins and no direct register access allowed
+  // sd_power_system_off() in deep sleep for full system shutdown
+  // sd_temp_get() to get temperature when Bluefruit begins
 
   pinMode(VBAT_ENABLE, OUTPUT);
   digitalWrite(VBAT_ENABLE, LOW); // Set low to read battery, never set high

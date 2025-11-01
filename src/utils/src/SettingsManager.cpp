@@ -4,17 +4,11 @@
 #include "../../../globals.h"
 // #include "../../utils/src/MSCFlash.h"
 
+#include "tools.h"
+
 #include <Arduino.h>
 
 char buf[100]; // Internal buffer
-
-char *trim(char *str) {
-  while (isspace(*str)) str++;
-  if (*str == 0) return str;
-  char *end = str + strlen(str) - 1;
-  while (end > str && isspace(*end)) *end-- = 0;
-  return str;
-}
 
 void loadSettings() {
   if (!fat_file.open("/settings.ini", O_RDONLY)) {

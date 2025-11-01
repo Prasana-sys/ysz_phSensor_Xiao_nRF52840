@@ -15,6 +15,14 @@ int fmt_hms(uint32_t ms, char* buffer, size_t bufferSize) {
   return snprintf(buffer, bufferSize,"%02d:%02d:%02d", h, m, s);
 }
 
+char *trim(char *str) {
+  while (isspace(*str)) str++;
+  if (*str == 0) return str;
+  char *end = str + strlen(str) - 1;
+  while (end > str && isspace(*end)) *end-- = 0;
+  return str;
+}
+
 uint16_t safeAnalogRead(uint8_t pin) {
 
   Serial.println("Starting SAADC read...");
@@ -116,6 +124,7 @@ uint16_t safeAnalogRead(uint8_t pin) {
 
   return value;
 
+  // Need to set NRFX_SAADC_ENABLED to 1 in nrfx_config.h line 1192 for below code to work
   // uint32_t psel = SAADC_CH_PSELP_PSELP_NC;
 
   // static uint32_t saadcReference = SAADC_CH_CONFIG_REFSEL_Internal;
