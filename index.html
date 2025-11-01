@@ -116,24 +116,15 @@
 
 <script>
 /*
-  Web app for YSZ pH Sensor
-  - Uses Web Bluetooth to connect to device and read/write characteristics
-  UUIDs from user:
-  PMS service: 019A2890-2324-7D95-8F76-8DE7146B560E
-    Log Entry: 019A2896-2324-7D95-8F76-8DE7146B560E (Indicate)
-
-  CS service: 019A2990-2324-7D95-8F76-8DE7146B560E
-    Command: 019A2991-2324-7D95-8F76-8DE7146B560E (Write)
-    continuousScanningDeployment: 019A2992-2324-7D95-8F76-8DE7146B560E (u8)
-    numberMeasurementsDeployment: 019A2993-2324-7D95-8F76-8DE7146B560E (u32)
-    numberMeasurementsPreDeployment: 019A2994-2324-7D95-8F76-8DE7146B560E (u32)
-    sampleIntervalDeployment: 019A2995-2324-7D95-8F76-8DE7146B560E (u32)
-    sampleIntervalPreDeployment: 019A2996-2324-7D95-8F76-8DE7146B560E (u8)
+  YSZ pH Sensor Web Bluetooth App
+  - Pre-deployment: PMS + CS services (Command in CS)
+  - BLE Readout: PMS only (Command in PMS)
 */
 
 const UUIDS = {
   PMS: '019a2890-2324-7d95-8f76-8de7146b560e',
   PMS_LOG: '019a2896-2324-7d95-8f76-8de7146b560e',
+  PMS_CMD: '019a2991-2324-7d95-8f76-8de7146b560e', // Command inside PMS (readout)
   CS: '019a2990-2324-7d95-8f76-8de7146b560e',
   CS_CMD: '019a2991-2324-7d95-8f76-8de7146b560e',
   CS_CONT_SCAN: '019a2992-2324-7d95-8f76-8de7146b560e',
@@ -152,12 +143,8 @@ const CMD = {
   START_TRANSFER: 0x12
 };
 
-let device = null;
-let server = null;
-let characteristics = {};
-let logs = [];
+let device = null, server = null, characteristics = {}, logs = [];
 
-// UI refs
 const connectBtn = document.getElementById('connectBtn');
 const disconnectBtn = document.getElementById('disconnectBtn');
 const deviceNameEl = document.getElementById('deviceName');
@@ -180,387 +167,162 @@ const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 const continueBtn = document.getElementById('continueBtn');
 const resetBtn = document.getElementById('resetBtn');
 const pingBtn = document.getElementById('pingBtn');
-
 const startTransferBtn = document.getElementById('startTransferBtn');
 const cmdPingBtn = document.getElementById('cmdPingBtn');
-
 const downloadCsvBtn = document.getElementById('downloadCsvBtn');
 const clearLogBtn = document.getElementById('clearLogBtn');
 
-// Connect button
-connectBtn.addEventListener('click', async () => {
-  try {
-    await connectToDevice();
-  } catch (e) {
-    console.error(e);
-    alert('Connection failed: ' + (e.message || e));
-  }
-});
+connectBtn.onclick = async () => { try { await connectToDevice(); } catch(e){ alert('Connection failed: '+e); } };
+disconnectBtn.onclick = () => { if(device && device.gatt.connected) device.gatt.disconnect(); cleanup(); };
+readSettingsBtn.onclick = readCurrentSettings;
+saveSettingsBtn.onclick = () => writeSettingsAndSendCommand(CMD.SAVE_SETTINGS);
+continueBtn.onclick = () => writeCommand(CMD.CONTINUE);
+resetBtn.onclick = () => { if(confirm('Reset device settings?')) writeCommand(CMD.RESET); };
+pingBtn.onclick = () => writeCommand(CMD.PING);
+startTransferBtn.onclick = () => writeCommand(CMD.START_TRANSFER);
+cmdPingBtn.onclick = () => writeCommand(CMD.PING);
+downloadCsvBtn.onclick = downloadCSV;
+clearLogBtn.onclick = () => { logs=[]; renderLog(); };
 
-// Disconnect
-disconnectBtn.addEventListener('click', async () => {
-  if (device && device.gatt.connected) {
-    device.gatt.disconnect();
-  }
-  cleanup();
-});
-
-// Read settings
-readSettingsBtn.addEventListener('click', async () => {
-  await readCurrentSettings();
-});
-
-// Save settings
-saveSettingsBtn.addEventListener('click', async () => {
-  await writeSettingsAndSendCommand(CMD.SAVE_SETTINGS);
-});
-
-// Continue
-continueBtn.addEventListener('click', async () => {
-  await writeCommand(CMD.CONTINUE);
-});
-
-// Reset
-resetBtn.addEventListener('click', async () => {
-  if (!confirm('Reset device settings to defaults?')) return;
-  await writeCommand(CMD.RESET);
-});
-
-// Ping
-pingBtn.addEventListener('click', async () => {
-  await writeCommand(CMD.PING);
-});
-
-// Readout mode: Start Transfer
-startTransferBtn.addEventListener('click', async () => {
-  await writeCommand(CMD.START_TRANSFER);
-});
-
-// Readout ping
-cmdPingBtn.addEventListener('click', async () => {
-  await writeCommand(CMD.PING);
-});
-
-// Download CSV
-downloadCsvBtn.addEventListener('click', () => {
-  downloadCSV();
-});
-
-// Clear log
-clearLogBtn.addEventListener('click', () => {
-  logs = [];
-  renderLog();
-});
-
-async function connectToDevice() {
-  connectionStatus.textContent = 'Connecting...';
-  const opts = {
-    filters: [
-      // Prefer by name so user sees device by name; if you want to filter by services use UUIDs
-      { namePrefix: 'YSZ' },
-    ],
-    optionalServices: [
-      UUIDS.PMS,
-      UUIDS.CS
-    ]
-  };
-
-  device = await navigator.bluetooth.requestDevice(opts);
-  device.addEventListener('gattserverdisconnected', onDisconnected);
-  deviceNameEl.textContent = device.name || device.id;
-  deviceUuidEl.textContent = device.id;
-
-  server = await device.gatt.connect();
-  connectionStatus.textContent = 'Connected';
-
-  // Discover services & characteristics we care about
+async function connectToDevice(){
+  connectionStatus.textContent='Connecting...';
+  const opts={filters:[{namePrefix:'YSZ'}],optionalServices:[UUIDS.PMS,UUIDS.CS]};
+  device=await navigator.bluetooth.requestDevice(opts);
+  device.addEventListener('gattserverdisconnected',onDisconnected);
+  deviceNameEl.textContent=device.name||device.id;
+  deviceUuidEl.textContent=device.id;
+  server=await device.gatt.connect();
+  connectionStatus.textContent='Connected';
   await discoverServicesAndCharacteristics();
 }
 
-async function discoverServicesAndCharacteristics() {
-  characteristics = {}; // reset
-  serviceListEl.textContent = '';
+async function discoverServicesAndCharacteristics(){
+  characteristics={}; serviceListEl.textContent='';
+  let hasPMS=false, hasCS=false;
 
-  // Try to get PMS service
-  let hasPMS = false, hasCS = false;
-  try {
-    const pmsService = await server.getPrimaryService(UUIDS.PMS);
-    hasPMS = true;
-    serviceListEl.textContent += 'PMS ';
-    // Get Log Entry char
-    try {
-      const logChar = await pmsService.getCharacteristic(UUIDS.PMS_LOG);
-      characteristics.pmsLog = logChar;
-      // subscribe to notifications
-      await startLogNotifications(logChar);
-    } catch (e) {
-      console.warn('PMS log char not found', e);
-    }
-  } catch (e) {
-    console.warn('PMS service not found', e);
-  }
+  // PMS service
+  try{
+    const pms=await server.getPrimaryService(UUIDS.PMS);
+    hasPMS=true; serviceListEl.textContent+='PMS ';
+    const logChar=await pms.getCharacteristic(UUIDS.PMS_LOG);
+    characteristics.pmsLog=logChar;
+    await startLogNotifications(logChar);
+    console.log('Found PMS Log Entry characteristic');
 
-  // Try to get CS service
-  try {
-    const csService = await server.getPrimaryService(UUIDS.CS);
-    hasCS = true;
-    serviceListEl.textContent += 'CS ';
-    // discover cs characteristics — some modes may not expose all
-    const charIds = [
-      ['csCmd', UUIDS.CS_CMD],
-      ['csContScan', UUIDS.CS_CONT_SCAN],
-      ['csNumMeasDeploy', UUIDS.CS_NUM_MEAS_DEPLOY],
-      ['csNumMeasPre', UUIDS.CS_NUM_MEAS_PREDEPLOY],
-      ['csSampleIntervalDeploy', UUIDS.CS_SAMPLE_INTERVAL_DEPLOY],
-      ['csSampleIntervalPre', UUIDS.CS_SAMPLE_INTERVAL_PREDEPLOY],
+    try{
+      const cmd=await pms.getCharacteristic(UUIDS.PMS_CMD);
+      characteristics.csCmd=cmd;
+      console.log('Found Command char inside PMS (Readout mode)');
+    }catch(e){ console.log('No Command char in PMS — likely Pre-deployment mode'); }
+
+  }catch(e){ console.warn('PMS service not found',e); }
+
+  // CS service (only pre-deploy)
+  try{
+    const cs=await server.getPrimaryService(UUIDS.CS);
+    hasCS=true; serviceListEl.textContent+='CS ';
+    const charIds=[
+      ['csCmd',UUIDS.CS_CMD],
+      ['csContScan',UUIDS.CS_CONT_SCAN],
+      ['csNumMeasDeploy',UUIDS.CS_NUM_MEAS_DEPLOY],
+      ['csNumMeasPre',UUIDS.CS_NUM_MEAS_PREDEPLOY],
+      ['csSampleIntervalDeploy',UUIDS.CS_SAMPLE_INTERVAL_DEPLOY],
+      ['csSampleIntervalPre',UUIDS.CS_SAMPLE_INTERVAL_PREDEPLOY]
     ];
-    for (const [name, uuid] of charIds) {
-      try {
-        const c = await csService.getCharacteristic(uuid);
-        characteristics[name] = c;
-      } catch (e) {
-        // not present in this mode
-      }
+    for(const [n,u] of charIds){
+      try{ characteristics[n]=await cs.getCharacteristic(u); console.log('Found',n);}
+      catch(e){ console.log('Missing',n);}
     }
-  } catch (e) {
-    console.warn('CS service not found', e);
-  }
+  }catch(e){ console.log('CS service not found (expected in readout)'); }
 
-  // Decide mode:
-  // If CS present AND all config characteristics are present => Pre-deployment
-  const hasAllConfig =
-    !!characteristics.csCmd &&
-    !!characteristics.csContScan &&
-    !!characteristics.csNumMeasDeploy &&
-    !!characteristics.csNumMeasPre &&
-    !!characteristics.csSampleIntervalDeploy &&
-    !!characteristics.csSampleIntervalPre;
+  // Decide mode
+  const hasConfig = !!characteristics.csContScan;
+  if(hasConfig && hasCS) enterPreDeploymentMode();
+  else if(hasPMS && characteristics.csCmd) enterReadoutMode();
+  else{ alert('Device structure not recognized'); cleanup(); }
 
-  if (hasAllConfig) {
-    enterPreDeploymentMode();
-  } else {
-    enterReadoutMode();
-  }
-
-  // UI toggles
-  connectBtn.classList.add('hidden');
-  disconnectBtn.classList.remove('hidden');
+  connectBtn.classList.add('hidden'); disconnectBtn.classList.remove('hidden');
 }
 
-function enterPreDeploymentMode() {
-  modeBadge.textContent = 'Pre-deployment';
+function enterPreDeploymentMode(){
+  modeBadge.textContent='Pre-deployment';
   modeBadge.classList.remove('readout');
-  modeBadge.classList.add('mode-pill');
   predeployPanel.classList.remove('hidden');
   readoutPanel.classList.add('hidden');
-  connectionStatus.textContent = 'Connected (Pre-deployment)';
-  console.log('Entered Pre-deployment mode');
+  connectionStatus.textContent='Connected (Pre-deployment)';
 }
-
-function enterReadoutMode() {
-  modeBadge.textContent = 'BLE Readout';
+function enterReadoutMode(){
+  modeBadge.textContent='BLE Readout';
   modeBadge.classList.add('readout');
   predeployPanel.classList.add('hidden');
   readoutPanel.classList.remove('hidden');
-  connectionStatus.textContent = 'Connected (Readout)';
-  console.log('Entered Readout mode');
+  connectionStatus.textContent='Connected (Readout)';
 }
 
-async function startLogNotifications(logChar) {
-  if (!logChar) return;
-  try {
-    await logChar.startNotifications();
-    logChar.addEventListener('characteristicvaluechanged', (ev) => {
-      const value = ev.target.value;
-      // decode as UTF-8 string (device indicates CSV lines)
-      const text = dataViewToString(value);
-      handleIncomingLogText(text);
-    });
-    console.log('Subscribed to log notifications');
-  } catch (e) {
-    console.warn('Could not start notifications on log char', e);
-  }
+async function startLogNotifications(char){
+  await char.startNotifications();
+  char.addEventListener('characteristicvaluechanged',ev=>{
+    const text=new TextDecoder().decode(new Uint8Array(ev.target.value.buffer));
+    handleIncomingLogText(text);
+  });
 }
-
-function dataViewToString(dataView) {
-  // convert DataView to UTF-8 string
-  const decoder = new TextDecoder('utf-8');
-  const arr = new Uint8Array(dataView.buffer, dataView.byteOffset, dataView.byteLength);
-  return decoder.decode(arr);
-}
-
-function handleIncomingLogText(text) {
-  // The device sends lines with trailing newline like "hh:mm:ss,1.234,...\n"
-  // Sometimes chunking may occur; we append and split by newline.
-  appendToLogBuffer(text);
-}
-
-let partialLine = '';
-function appendToLogBuffer(chunk) {
-  // accumulate
-  const combined = partialLine + chunk;
-  const parts = combined.split('\\n');
-  // if last element doesn't end in newline, keep it as partial
-  partialLine = parts.pop();
-  for (const line of parts) {
-    if (line.trim().length === 0) continue;
-    // Some devices send "NO DATA" as a message to indicate no further data - we'll add it as well
-    logs.push(line);
-  }
+let partialLine='';
+function handleIncomingLogText(text){
+  const combined=partialLine+text;
+  const parts=combined.split('\n');
+  partialLine=parts.pop();
+  for(const line of parts){ if(line.trim()) logs.push(line); }
   renderLog();
 }
-
-// Render log to textarea
-function renderLog() {
-  if (logs.length === 0) {
-    logArea.value = '';
-    return;
-  }
-  logArea.value = logs.join('\\n') + (partialLine ? '\\n' + partialLine : '');
-  logArea.scrollTop = logArea.scrollHeight;
+function renderLog(){
+  logArea.value=logs.join('\n')+(partialLine?'\n'+partialLine:'');
+  logArea.scrollTop=logArea.scrollHeight;
 }
 
-// Read current settings from config characteristics (pre-deploy)
-async function readCurrentSettings() {
-  if (!characteristics.csContScan) {
-    alert('Config characteristics not available on this device.');
-    return;
-  }
-  try {
-    // continuousScanningDeployment (u8)
-    const cont = await characteristics.csContScan.readValue();
-    const contVal = cont.getUint8(0);
-    contScanInput.value = contVal ? 1 : 0;
-
-    // numberMeasurementsDeployment (u32 little-endian)
-    const nmd = await characteristics.csNumMeasDeploy.readValue();
-    const nmdVal = nmd.getUint32(0, true);
-    numMeasDeployInput.value = nmdVal;
-
-    const nmp = await characteristics.csNumMeasPre.readValue();
-    const nmpVal = nmp.getUint32(0, true);
-    numMeasPreDeployInput.value = nmpVal;
-
-    const sid = await characteristics.csSampleIntervalDeploy.readValue();
-    const sidVal = sid.getUint32(0, true);
-    sampleIntervalDeployInput.value = sidVal;
-
-    const sip = await characteristics.csSampleIntervalPre.readValue();
-    const sipVal = sip.getUint8(0);
-    sampleIntervalPreDeployInput.value = sipVal;
-
-    alert('Settings read and populated in the form.');
-  } catch (e) {
-    console.error('Error reading settings:', e);
-    alert('Failed to read settings: ' + (e.message || e));
-  }
+async function readCurrentSettings(){
+  if(!characteristics.csContScan){alert('Config not available');return;}
+  try{
+    contScanInput.value=(await characteristics.csContScan.readValue()).getUint8(0);
+    numMeasDeployInput.value=(await characteristics.csNumMeasDeploy.readValue()).getUint32(0,true);
+    numMeasPreDeployInput.value=(await characteristics.csNumMeasPre.readValue()).getUint32(0,true);
+    sampleIntervalDeployInput.value=(await characteristics.csSampleIntervalDeploy.readValue()).getUint32(0,true);
+    sampleIntervalPreDeployInput.value=(await characteristics.csSampleIntervalPre.readValue()).getUint8(0);
+    alert('Settings read');
+  }catch(e){ alert('Read failed:'+e); }
 }
 
-// Write changed settings (only fields non-empty) and then optionally send command
-async function writeSettingsAndSendCommand(cmdByte) {
-  if (!characteristics.csCmd) {
-    alert('Command characteristic not available.');
-    return;
-  }
-
-  try {
-    // For each field, if not blank, write to corresponding char
-    if (contScanInput.value !== '') {
-      const v = contScanInput.value == '1' ? 1 : 0;
-      const buf = new Uint8Array([v]);
-      await characteristics.csContScan.writeValue(buf);
-      console.log('Wrote contScan', v);
-    }
-    if (numMeasDeployInput.value !== '') {
-      const buf = new ArrayBuffer(4);
-      new DataView(buf).setUint32(0, Number(numMeasDeployInput.value), true);
-      await characteristics.csNumMeasDeploy.writeValue(buf);
-      console.log('Wrote numMeasDeploy', numMeasDeployInput.value);
-    }
-    if (numMeasPreDeployInput.value !== '') {
-      const buf = new ArrayBuffer(4);
-      new DataView(buf).setUint32(0, Number(numMeasPreDeployInput.value), true);
-      await characteristics.csNumMeasPre.writeValue(buf);
-      console.log('Wrote numMeasPre', numMeasPreDeployInput.value);
-    }
-    if (sampleIntervalDeployInput.value !== '') {
-      const buf = new ArrayBuffer(4);
-      new DataView(buf).setUint32(0, Number(sampleIntervalDeployInput.value), true);
-      await characteristics.csSampleIntervalDeploy.writeValue(buf);
-      console.log('Wrote sampleIntervalDeploy', sampleIntervalDeployInput.value);
-    }
-    if (sampleIntervalPreDeployInput.value !== '') {
-      const v = Number(sampleIntervalPreDeployInput.value) & 0xFF;
-      const buf = new Uint8Array([v]);
-      await characteristics.csSampleIntervalPre.writeValue(buf);
-      console.log('Wrote sampleIntervalPre', v);
-    }
-
-    // After writing, send command (e.g., SAVE)
+async function writeSettingsAndSendCommand(cmdByte){
+  try{
+    if(contScanInput.value!=='') await characteristics.csContScan.writeValue(Uint8Array.of(Number(contScanInput.value)));
+    if(numMeasDeployInput.value!==''){const b=new ArrayBuffer(4);new DataView(b).setUint32(0,Number(numMeasDeployInput.value),true);await characteristics.csNumMeasDeploy.writeValue(b);}
+    if(numMeasPreDeployInput.value!==''){const b=new ArrayBuffer(4);new DataView(b).setUint32(0,Number(numMeasPreDeployInput.value),true);await characteristics.csNumMeasPre.writeValue(b);}
+    if(sampleIntervalDeployInput.value!==''){const b=new ArrayBuffer(4);new DataView(b).setUint32(0,Number(sampleIntervalDeployInput.value),true);await characteristics.csSampleIntervalDeploy.writeValue(b);}
+    if(sampleIntervalPreDeployInput.value!=='') await characteristics.csSampleIntervalPre.writeValue(Uint8Array.of(Number(sampleIntervalPreDeployInput.value)));
     await writeCommand(cmdByte);
-    alert('Settings saved and command sent.');
-  } catch (e) {
-    console.error('Error writing settings:', e);
-    alert('Failed to write settings: ' + (e.message || e));
-  }
+    alert('Settings saved');
+  }catch(e){ alert('Write failed:'+e); }
 }
 
-// Write a single byte command to csCmd
-async function writeCommand(cmdByte) {
-  if (!characteristics.csCmd) {
-    alert('Command characteristic not available.');
-    return;
-  }
-  try {
-    const buf = new Uint8Array([cmdByte]);
-    await characteristics.csCmd.writeValue(buf);
-    console.log('Wrote command', cmdByte);
-  } catch (e) {
-    console.error('Error writing command:', e);
-    alert('Failed to send command: ' + (e.message || e));
-  }
+async function writeCommand(cmdByte){
+  if(!characteristics.csCmd){alert('Command characteristic not available');return;}
+  try{ await characteristics.csCmd.writeValue(Uint8Array.of(cmdByte)); console.log('Command',cmdByte,'sent'); }
+  catch(e){ alert('Send failed:'+e); }
 }
 
-function onDisconnected() {
-  console.log('Device disconnected');
-  cleanup();
+function onDisconnected(){ console.log('Disconnected'); cleanup(); }
+function cleanup(){
+  deviceNameEl.textContent='Not connected'; deviceUuidEl.textContent='';
+  connectionStatus.textContent='Disconnected';
+  predeployPanel.classList.add('hidden'); readoutPanel.classList.add('hidden');
+  connectBtn.classList.remove('hidden'); disconnectBtn.classList.add('hidden');
+  device=null; server=null; characteristics={};
 }
-
-function cleanup() {
-  deviceNameEl.textContent = 'Not connected';
-  deviceUuidEl.textContent = '';
-  connectionStatus.textContent = 'Disconnected';
-  modeBadge.textContent = '—';
-  predeployPanel.classList.add('hidden');
-  readoutPanel.classList.add('hidden');
-  connectBtn.classList.remove('hidden');
-  disconnectBtn.classList.add('hidden');
-  device = null;
-  server = null;
-  characteristics = {};
+function downloadCSV(){
+  if(!logs.length){alert('No logs');return;}
+  const blob=new Blob([logs.join('\n')+'\n'],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='ysz_ph_logs.csv';a.click();URL.revokeObjectURL(url);
 }
-
-// Download CSV from logs array
-function downloadCSV() {
-  if (logs.length === 0) {
-    alert('No logs to download');
-    return;
-  }
-  const csvContent = logs.join('\\n') + '\\n';
-  const blob = new Blob([csvContent], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const ts = new Date().toISOString().replace(/[:.]/g,'-');
-  a.href = url;
-  a.download = `ysz_ph_logs_${ts}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-// Prevent losing logs if page reloads? Not implemented; logs are ephemeral in this simple app.
-
 </script>
 </body>
 </html>
