@@ -218,7 +218,7 @@ void PreDeploymentCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr
 
     case 0x02:  // CONTINUE TO PRE-DEPLOYMENT
       Serial.println("BLE Command: CONTINUE TO PRE-DEPLOYMENT");
-      saveSettings();
+      // saveSettings();
       runPreDeploymentLoop(); // Exit function to transition to sending measurements
       break;
 
@@ -230,6 +230,11 @@ void PreDeploymentCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr
       sampleIntervalDeployment = 3600;
       sampleIntervalPreDeployment = 30;
       saveSettings();          // reload defaults
+      csContScanDeploy.write8(continuousScanningDeployment ? 0x01 : 0x00);
+      csNumMeasDeploy.write32(numberMeasurementsDeployment);
+      csNumMeasPreDeploy.write32(numberMeasurementsPreDeployment);
+      csSampleIntervalDeploy.write32(sampleIntervalDeployment);
+      csSampleIntervalPreDeploy.write8(sampleIntervalPreDeployment);
       break;
 
     case 0x04:  // PING MODE
