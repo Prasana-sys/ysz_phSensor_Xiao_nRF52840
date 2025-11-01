@@ -10,15 +10,11 @@
 #define DEFAULT_SAMPLE_INTERVAL_PRE_DEPLOYMENT 10
 
 extern const uint8_t pHSensorADC;
-// const uint8_t refGroundADC = A1;
-// const uint8_t ref3v3ADC = A2;
 
 // BAT Voltage read pin at Pin 32 PIN_VBAT
 // Put VBAT_ENABLE to output sink (low) to read PIN_VBAT
 extern const uint8_t chargeLED; // P0_17 = 17  D23   GREEN CHARGE LED
 extern const float BATT_LOW_VOLTAGE;
-
-// Get Die Temperature of nRF52840 but very inaccurate
 
 extern const uint8_t afeEnablePin;
 
@@ -26,7 +22,6 @@ extern const float VREF;
 extern const int ADC_MAX;
 
 extern const uint8_t deploymentSwitch;
-// extern const uint8_t stagingSwitch;
 
 // Default parameters for measurement readings
 extern bool continuousScanningDeployment; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only

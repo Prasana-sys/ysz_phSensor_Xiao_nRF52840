@@ -4,7 +4,6 @@
 #include <Arduino.h>
 
 #include <Adafruit_TinyUSB.h> // included for Serial to compile
-#include <bluefruit.h>
 
 #include "config.h"
 #include "globals.h"
@@ -37,8 +36,10 @@ void setup() {
   // sd_power_system_off() in deep sleep for full system shutdown
   // sd_temp_get() to get temperature when Bluefruit begins
 
+  pinMode(chargeLED, INPUT_PULLUP);       // sleep current increases significantly without pull-up  
+
   pinMode(VBAT_ENABLE, OUTPUT);
-  digitalWrite(VBAT_ENABLE, LOW); // Set low to read battery, never set high
+  digitalWrite(VBAT_ENABLE, LOW); // Set low to read battery voltage
 
   pinMode (PIN_CHARGING_CURRENT, OUTPUT); // battery charging current
   digitalWrite(PIN_CHARGING_CURRENT, HIGH); // Set to 50 mA
@@ -50,7 +51,6 @@ void setup() {
   digitalWrite(afeEnablePin, LOW);
 
   pinMode(deploymentSwitch, INPUT_PULLUP); // SPST switch to GND when active
-  // pinMode(stagingSwitch, INPUT_PULLUP);
 
   flash.begin(my_flash_devices, flashDevices);
   

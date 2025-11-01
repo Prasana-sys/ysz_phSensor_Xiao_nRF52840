@@ -6,6 +6,10 @@ SPIClass SPI_2(NRF_SPIM2, PIN_QSPI_IO1, PIN_QSPI_SCK, PIN_QSPI_IO0);
 
 void lightSleep(uint32_t sleepDuration) {
   Serial.println("Entering light sleep mode...");
+
+  // When 4.2V, which is the maximum battery voltage, is applied, the voltage at D0/P0.31 has a margin of more than 100mV to VDD+0.3V.
+  // TLDR: Safe to set HIGH
+  digitalWrite(VBAT_ENABLE, HIGH); // Set high to stop battery read
   
   fat_root.close();
   fatfs.end();
@@ -14,6 +18,9 @@ void lightSleep(uint32_t sleepDuration) {
   pinMode(PIN_QSPI_CS, OUTPUT);   // CS#
   pinMode(PIN_QSPI_IO2, OUTPUT);  // WP#
   pinMode(PIN_QSPI_IO3, OUTPUT);  // HOLD#
+  digitalWrite(PIN_QSPI_CS, HIGH);
+  digitalWrite(PIN_QSPI_IO2, HIGH);
+  digitalWrite(PIN_QSPI_IO3, HIGH);
 
   SPI_2.begin();
   digitalWrite(PIN_QSPI_CS, LOW);
@@ -21,13 +28,21 @@ void lightSleep(uint32_t sleepDuration) {
   digitalWrite(PIN_QSPI_CS, HIGH);
   SPI_2.end();
 
+  // flashTransport.runCommand(0xB9); // Enter Deep Power-down
+
+  // digitalWrite(LED_GREEN, LOW); // Turn on GREEN LED before sleep
+
   delay(sleepDuration * 1000); // Sleep for specified duration in seconds
+
+  // digitalWrite(LED_GREEN, HIGH); // Turn off GREEN LED after wake-up
 
   SPI_2.begin();
   digitalWrite(PIN_QSPI_CS, LOW);
   SPI_2.transfer(0xAB);           // 0xAB release Deep Power-down
   digitalWrite(PIN_QSPI_CS, HIGH);
   SPI_2.end();
+
+  // flashTransport.runCommand(0xAB); // Release from Deep Power-down
 
   flash.begin(my_flash_devices, flashDevices);
   fatfs.begin(&flash);
@@ -39,11 +54,15 @@ void lightSleep(uint32_t sleepDuration) {
     while(1);
   }
 
+  digitalWrite(VBAT_ENABLE, LOW); // Set low to enable battery reads
+
   Serial.println("Woke up from light sleep mode.");
 }
 
 void deepSleep() {
   Serial.println("Entering deep sleep mode...");
+
+  digitalWrite(VBAT_ENABLE, HIGH); // Set high to stop battery read
 
   fat_root.close();
   fatfs.end();
@@ -52,6 +71,9 @@ void deepSleep() {
   pinMode(PIN_QSPI_CS, OUTPUT);   // CS#
   pinMode(PIN_QSPI_IO2, OUTPUT);  // WP#
   pinMode(PIN_QSPI_IO3, OUTPUT);  // HOLD#
+  digitalWrite(PIN_QSPI_CS, HIGH);
+  digitalWrite(PIN_QSPI_IO2, HIGH);
+  digitalWrite(PIN_QSPI_IO3, HIGH);
 
   SPI_2.begin();
   digitalWrite(PIN_QSPI_CS, LOW);
