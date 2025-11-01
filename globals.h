@@ -6,8 +6,6 @@
 #include "SdFat.h"
 #include "bluefruit.h"
 
-// const uint8_t chargeLED = 23; // P0_17 = 17  D23   GREEN CHARGE LED
-
 // Uncomment to run example with custom SPI and SS e.g with FRAM breakout
 // #define CUSTOM_CS   A5
 // #define CUSTOM_SPI  SPI
@@ -26,7 +24,7 @@
   // - EXTERNAL_FLASH_USE_QSPI
   // - EXTERNAL_FLASH_USE_CS/EXTERNAL_FLASH_USE_SPI
   #if defined(EXTERNAL_FLASH_USE_QSPI)
-    extern Adafruit_FlashTransport_QSPI flashTransport;
+    extern Adafruit_FlashTransport_QSPI flashTransport; // This is what is being used in the project
 
   #elif defined(EXTERNAL_FLASH_USE_SPI)
     extern Adafruit_FlashTransport_SPI flashTransport;
@@ -36,6 +34,7 @@
   #endif
 #endif
 
+// Flash device definition for P25Q16H
 #define P25Q16H                                                                \
   {                                                                            \
     .total_size = (1 << 21), /* 2 MiB */                                       \
