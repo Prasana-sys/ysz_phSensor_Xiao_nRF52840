@@ -35,6 +35,7 @@ void lightSleep(uint32_t sleepDuration) {
 
   if ( !fat_root.open("/") ){
     Serial.println("open root failed");
+    digitalWrite(LED_RED, LOW);
     while(1);
   }
 

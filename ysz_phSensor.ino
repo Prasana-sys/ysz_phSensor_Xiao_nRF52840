@@ -15,7 +15,7 @@
 #include "src/modes/src/BLEReadout.h"
 #include "src/modes/src/PreDeployment.h"
 
-#define DEBUG_MODE 2 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
+#define DEBUG_MODE 0 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
 
 void setup() {
 
@@ -72,7 +72,9 @@ void setup() {
 
   // USB_MSC must begin before starting serial
   Serial.begin(115200);
-  while ( !Serial ) delay(100); // wait for UART connection (For debug/testing only)
+  if (DEBUG_MODE) {
+    while ( !Serial ) delay(100); // wait for UART connection (For debug/testing only)
+  }
 
   Serial.print("Reset reason: 0x");
   Serial.println(NRF_POWER->RESETREAS, HEX);

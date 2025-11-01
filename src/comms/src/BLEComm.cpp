@@ -224,11 +224,11 @@ void PreDeploymentCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr
 
     case 0x03:  // RESET SETTINGS
       Serial.println("BLE Command: RESET SETTINGS TO DEFAULTS");
-      continuousScanningDeployment = 0;
-      numberMeasurementsDeployment = 10;
-      numberMeasurementsPreDeployment = 10;
-      sampleIntervalDeployment = 3600;
-      sampleIntervalPreDeployment = 30;
+      continuousScanningDeployment = DEFAULT_CONTINUOUS_SCANNING_DEPLOYMENT;
+      numberMeasurementsDeployment = DEFAULT_NUMBER_MEASUREMENTS_DEPLOYMENT;
+      numberMeasurementsPreDeployment = DEFAULT_NUMBER_MEASUREMENTS_PRE_DEPLOYMENT;
+      sampleIntervalDeployment = DEFAULT_SAMPLE_INTERVAL_DEPLOYMENT;
+      sampleIntervalPreDeployment = DEFAULT_SAMPLE_INTERVAL_PRE_DEPLOYMENT;
       saveSettings();          // reload defaults
       csContScanDeploy.write8(continuousScanningDeployment ? 0x01 : 0x00);
       csNumMeasDeploy.write32(numberMeasurementsDeployment);

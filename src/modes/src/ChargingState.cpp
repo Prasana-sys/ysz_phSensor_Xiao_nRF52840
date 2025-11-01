@@ -44,6 +44,9 @@ void runChargingState() {
         delay(1000); // refresh every 0.5 second
       }
     }
+    else {
+      delay(1000); // wait for mount
+    }
 
   }
 }

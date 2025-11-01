@@ -2,10 +2,10 @@
 
 const uint8_t pHSensorADC = A0;
 
-const uint8_t afeEnablePin = D7;
+const uint8_t afeEnablePin = D7; // TODO: Implement in sleep manager
 
 const uint8_t chargeLED = 23; // LOW for charging, HIGH not charging
-const float BATT_LOW_VOLTAGE = 0.0; // Will need adjustment
+const float BATT_LOW_VOLTAGE = 0.0; //TODO: Will need adjustment
 
 const float VREF = 3.6;
 const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;
@@ -13,11 +13,11 @@ const int ADC_MAX = (1 << ADC_RESOLUTION) - 1;
 const uint8_t deploymentSwitch = D1;
 // const uint8_t stagingSwitch = D2;
 
-bool continuousScanningDeployment = 1; // Default = 0
-uint32_t numberMeasurementsDeployment = 11; // Default = 10
-uint32_t numberMeasurementsPreDeployment = 12; // Default = 10
-uint32_t sampleIntervalDeployment = 60; // Default = 3600
-uint8_t sampleIntervalPreDeployment = 35; // Default = 30
+bool continuousScanningDeployment = DEFAULT_CONTINUOUS_SCANNING_DEPLOYMENT; // Default = 0
+uint32_t numberMeasurementsDeployment = DEFAULT_NUMBER_MEASUREMENTS_DEPLOYMENT; // Default = 24
+uint32_t numberMeasurementsPreDeployment = DEFAULT_NUMBER_MEASUREMENTS_PRE_DEPLOYMENT; // Default = 10
+uint32_t sampleIntervalDeployment = DEFAULT_SAMPLE_INTERVAL_DEPLOYMENT; // Default = 3600
+uint8_t sampleIntervalPreDeployment = DEFAULT_SAMPLE_INTERVAL_PRE_DEPLOYMENT; // Default = 10
 
 // bool continuousScanningDeployment = 0; // Default = 0
 // uint32_t numberMeasurementsDeployment = 10; // Default = 10
