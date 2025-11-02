@@ -1,7 +1,7 @@
 #include "ChargingState.h"
 
 #include "Adafruit_TinyUSB.h"
-#include "../../../globals.h"
+#include "../../core/src/globals.h"
 
 void runChargingState() {
   // Always charging when USB connected to power source (Power bank or wall outlet)

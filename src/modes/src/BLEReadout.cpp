@@ -1,6 +1,6 @@
 #include "BLEReadout.h"
 
-#include "../../../globals.h"
+#include "../../core/src/globals.h"
 #include "../../comms/src/BLEComm.h"
 #include "../../utils/src/tools.h"
 #include "../../utils/src/SleepManager.h"

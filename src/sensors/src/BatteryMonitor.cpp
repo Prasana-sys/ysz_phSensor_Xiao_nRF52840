@@ -1,6 +1,6 @@
 #include "BatteryMonitor.h"
 
-#include "../../../config.h"
+#include "../../core/src/config.h"
 #include "../../utils/src/tools.h"
 
 float getBattVoltage() {

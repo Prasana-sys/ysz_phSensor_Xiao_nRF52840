@@ -1,6 +1,6 @@
 #include "MSCFlash.h"
 
-#include "../../../globals.h"
+#include "../../core/src/globals.h"
 
 // Callback invoked when received READ10 command.
 // Copy disk's data to buffer (up to bufsize) and 

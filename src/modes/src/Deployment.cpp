@@ -1,8 +1,8 @@
 #include "Deployment.h"
 
 #include "../../utils/src/SettingsManager.h"
-#include "../../../config.h"
-#include "../../../globals.h"
+#include "../../core/src/config.h"
+#include "../../core/src/globals.h"
 #include "../../sensors/src/BatteryMonitor.h"
 #include "../../sensors/src/phSensor.h"
 #include "../../utils/src/Logger.h"

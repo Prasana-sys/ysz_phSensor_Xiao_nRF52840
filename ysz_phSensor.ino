@@ -5,8 +5,8 @@
 
 #include <Adafruit_TinyUSB.h> // included for Serial to compile
 
-#include "config.h"
-#include "globals.h"
+#include "src/core/src/config.h"
+#include "src/core/src/globals.h"
 
 #include "src/utils/src/MSCFlash.h" // read/write/flush callbacks for MSC
 #include "src/modes/src/ChargingState.h"

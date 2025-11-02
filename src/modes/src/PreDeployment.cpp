@@ -2,8 +2,8 @@
 
 #include "bluefruit.h"
 
-#include "../../../config.h"
-#include "../../../globals.h"
+#include "../../core/src/config.h"
+#include "../../core/src/globals.h"
 #include "../../utils/src/SleepManager.h"
 #include "../../utils/src/SettingsManager.h"
 #include "../../comms/src/BLEComm.h"

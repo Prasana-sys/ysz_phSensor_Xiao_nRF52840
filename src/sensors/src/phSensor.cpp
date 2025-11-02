@@ -1,6 +1,6 @@
 #include "phSensor.h"
 
-#include "../../../config.h"
+#include "../../core/src/config.h"
 #include "TemperatureSensor.h"
 #include "../../utils/src/tools.h"
 

@@ -1,6 +1,6 @@
 #include "SleepManager.h"
 
-#include "../../../globals.h"
+#include "../../core/src/globals.h"
 
 SPIClass SPI_2(NRF_SPIM2, PIN_QSPI_IO1, PIN_QSPI_SCK, PIN_QSPI_IO0);
 

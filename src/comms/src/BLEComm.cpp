@@ -1,7 +1,7 @@
 #include "BLEComm.h"
 
-#include "../../../globals.h"
-#include "../../../config.h"
+#include "../../core/src/globals.h"
+#include "../../core/src/config.h"
 
 #include "../../modes/src/PreDeployment.h"
 #include "../../modes/src/BLEReadout.h"

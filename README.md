@@ -2,7 +2,7 @@
 
 The XIAO nRF52840 in this project receives analog Data from the Analog Front End (AFE), which interfaces with pH and reference electrodes, saves the data to an external QSPI Flash memory and can later send the data wirelessly to a Webapp via BLE. 
 
-[Link to webapp](https://prasana-sys.github.io/Magnetoelastic_Biosensor_PWIS/)  
+[Link to webapp](https://prasana-sys.github.io/ysz_phSensor_Xiao_nRF52840/)  
 
 ## How to compile and use  
 Download Arduino IDE 2.3.5 (or higher)  
@@ -16,6 +16,8 @@ Open Boards Manager in Arduino IDE and install "Seeed nRF52 Boards" Board Suppor
 Do not install the mbed-enabled BSP and if modifying code in this repo, only use the libraries provided in the non-mbed BSP!  
 
 After installing the board package, navigate to Tools > Board and select "Seeed XIAO nRF52840".  
+
+Do not modify file structure, i.e., maintain /src/MODULE_NAME/src/FILES_HERE for submodules to compile along with .ino file.
 
 ## State Diagrams and Flowcharts
 
