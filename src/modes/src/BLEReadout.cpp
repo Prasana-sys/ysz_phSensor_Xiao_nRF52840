@@ -6,6 +6,9 @@
 #include "../../utils/src/SleepManager.h"
 
 void runBLEReadoutState () {
+  // Turn Blue LED on to indicate entering BLE Readout State
+  digitalWrite(LED_BLUE, LOW);
+  
   // Setup BLE services and characteristics
   Serial.println("Setting up BLE services for BLE Readout state...");
   setupServicesReadout();

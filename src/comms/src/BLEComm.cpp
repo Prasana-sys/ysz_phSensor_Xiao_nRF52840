@@ -166,6 +166,8 @@ void connect_callback(uint16_t conn_handle)
   Serial.println("Webapp Connected.");
   webappConnHandle = conn_handle;
 
+  digitalWrite(LED_BLUE, LOW); // Keep Blue LED on to indicate connection
+
   // lsbLED.write8(0x01);
 
   // connection_count++;

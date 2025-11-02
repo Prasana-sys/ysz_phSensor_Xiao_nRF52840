@@ -11,6 +11,9 @@
 #include "../../sensors/src/phSensor.h"
 
 void setupPreDeploymentState () {
+  // Turn Green LED on to indicate entering Pre-Deployment State
+  digitalWrite(LED_GREEN, LOW);
+
   loadSettings();
 
   // Setup BLE services and characteristics
@@ -55,6 +58,9 @@ void runPreDeploymentLoop () {
 
   // Stop advertising
   Bluefruit.Advertising.stop();
+
+  digitalWrite(LED_GREEN, HIGH); // Turn off Green LED
+  digitalWrite(LED_BLUE, HIGH);  // Turn off Blue LED
 
   deepSleep(); // Sleep indefinitely after measurements are done
 }

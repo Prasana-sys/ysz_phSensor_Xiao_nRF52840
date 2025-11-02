@@ -9,6 +9,18 @@
 #include "../../utils/src/SleepManager.h"
 
 void runDeploymentState () {
+  // Flash White LED to indicate entering Deployment State
+  for (int i = 0; i < 3; i++) {
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_BLUE, LOW);
+    delay(1000);
+    digitalWrite(LED_RED, HIGH);
+    digitalWrite(LED_GREEN, HIGH);
+    digitalWrite(LED_BLUE, HIGH);
+    delay(1000);
+  } 
+
   loadSettings();
 
   Serial.println("Current Configuration:");
@@ -17,6 +29,8 @@ void runDeploymentState () {
   Serial.printf("numberMeasurementsPreDeployment = %lu\n", numberMeasurementsPreDeployment);
   Serial.printf("sampleIntervalDeployment = %lu\n", sampleIntervalDeployment);
   Serial.printf("sampleIntervalPreDeployment = %d\n", sampleIntervalPreDeployment);
+
+  // TODO: add deployment start delay setting?
 
   const uint32_t start_ms = millis();
 

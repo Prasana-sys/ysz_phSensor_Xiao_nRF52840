@@ -50,6 +50,18 @@ Do not modify file structure, i.e., maintain /src/MODULE_NAME/src/FILES_HERE for
 ![Pre-Deployment Mode](img/Pre_Deployment_Mode.jpg "Pre-Deployment Mode")
 ![BLE Readout Mode](img/BLE_Readout_Mode.jpg "BLE Readout Mode")
 
+## **LED Status Indicators**
+
+| State / Event | LED Color & Behavior | Description |
+|----------------|----------------------|--------------|
+| **Charging** | Small **Green** LED ON | Indicates battery is charging. LED turns **OFF** once fully charged. |
+| **Entering Deployment Mode** | **White** LED flashes **three times** | Confirms transition into Deployment Mode. |
+| **Pre-Deployment Mode (Idle)** | **Green** LED ON (steady) | Indicates device is in Pre-Deployment mode. |
+| **Pre-Deployment Mode (Advertising)** | **Cyan** LED flashing (Green + Blue) | Device is advertising BLE connection during Pre-Deployment. |
+| **BLE Readout Mode (Idle)** | **Blue** LED ON (steady) | Indicates device is in BLE Readout mode. |
+| **BLE Readout Mode (Advertising)** | **Blue** LED flashing | Device is advertising BLE connection during Readout mode. |
+| **Fatal Error** | **Red** LED ON (steady) | Indicates a critical fault. **Power off completely** to reset the device. |
+
 ## GATT Services and Characteristics
 
 ### **BLE Readout Mode**

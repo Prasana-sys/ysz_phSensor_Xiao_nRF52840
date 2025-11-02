@@ -17,8 +17,6 @@
 #define DEBUG_MODE 0 // 0/1/2/3 - Default, Deployment, BLE Readout, Pre-Deployment
 
 void setup() {
-
-  // TODO: Color code each mode with LED colors
   pinMode(LED_RED, OUTPUT); // LED_BUILTIN
   pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
