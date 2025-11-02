@@ -35,7 +35,7 @@ bool fat_fs_changed = true; // // to print contents initially
  * pH Voltage (float) (Indicate / Read) : 019A2893-2324-7D95-8F76-8DE7146B560E
  * Die Temp (float) (Indicate / Read) : 019A2894-2324-7D95-8F76-8DE7146B560E
  * Battery Volt (float) (Indicate / Read) : 019A2895-2324-7D95-8F76-8DE7146B560E
- * Log Entry (32 bytes) (Indicate) : 019A2896-2324-7D95-8F76-8DE7146B560E
+ * Log Entry (247 bytes) (Indicate) : 019A2896-2324-7D95-8F76-8DE7146B560E
  * 
  * Config Service (CS): 019A2990-2324-7D95-8F76-8DE7146B560E
  * Command (uint8) (Write) : 019A2991-2324-7D95-8F76-8DE7146B560E

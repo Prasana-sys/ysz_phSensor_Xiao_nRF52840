@@ -4,6 +4,13 @@ The XIAO nRF52840 in this project receives analog Data from the Analog Front End
 
 [Link to webapp](https://prasana-sys.github.io/ysz_phSensor_Xiao_nRF52840/)  
 
+## Features
+- Reads analog voltage from a pH sensor and reference electrode
+- Stores measurements on external QSPI Flash memory
+- Supports BLE communication for wireless data transfer to a web app
+- Configurable measurement intervals and deployment modes
+- Low-power standby using `sd_power_system_off()`
+
 ## How to compile and use  
 Download Arduino IDE 2.3.5 (or higher)  
 Delete local SdFat library that comes pre-installed with Arduino IDE  
@@ -19,9 +26,66 @@ After installing the board package, navigate to Tools > Board and select "Seeed 
 
 Do not modify file structure, i.e., maintain /src/MODULE_NAME/src/FILES_HERE for submodules to compile along with .ino file.
 
+## Uploading Firmware
+1. Connect the XIAO nRF52840 via USB.
+2. Select correct COM port in Arduino IDE.
+3. Click “Upload”.
+4. If upload fails, double-press reset button to enter bootloader mode.
+
+## Hardware Connections
+| Component | XIAO Pin | Description |
+|------------|-----------|-------------|
+| pH Sensor ADC | A0 | Analog input |
+| AFE Enable Pin | D7 | Digital Output |
+| Deployment Switch | D1 | Digital Input |
+| Battery | BAT | Power supply |
+
 ## State Diagrams and Flowcharts
 
+### State Diagram
+![State Diagram](img/State_Diagram.svg "State Diagram")
 
+### Flowcharts
+![Deployment Mode](img/Deployment_Mode.svg "Deployment Mode")
+![Pre-Deployment Mode](img/Pre_Deployment_Mode.svg "Pre-Deployment Mode")
+![BLE Readout Mode](img\BLE_Readout_Mode.svg "BLE Readout Mode")
+
+## GATT Services and Characteristics
+
+### **BLE Readout Mode**
+| Service | UUID | Characteristic | UUID | Properties | Description |
+|----------|------|----------------|------|-------------|--------------|
+| **pH Measurement Service (PMS)** | `019A2890-2324-7D95-8F76-8DE7146B560E` | **Log Entry** | `019A2896-2324-7D95-8F76-8DE7146B560E` | *Indicate (char \*)* | Sends logged pH data entries from flash memory to the client. |
+|  |  | **Command** | `019A2991-2324-7D95-8F76-8DE7146B560E` | *Write (uint8)* | Used by the client to control the readout process (e.g., start transfer). |
+
+---
+
+### **Pre-Deployment Mode**
+| Service | UUID | Characteristic | UUID | Properties | Description |
+|----------|------|----------------|------|-------------|--------------|
+| **pH Measurement Service (PMS)** | `019A2890-2324-7D95-8F76-8DE7146B560E` | **Log Entry** | `019A2896-2324-7D95-8F76-8DE7146B560E` | *Indicate (char \*)* | Used to stream real-time pH samples before deployment. |
+| **Configuration Service (CS)** | `019A2990-2324-7D95-8F76-8DE7146B560E` | **Command** | `019A2991-2324-7D95-8F76-8DE7146B560E` | *Write (uint8)* | Used to send configuration commands such as **SAVE SETTINGS**, **RESET SETTINGS** or **CONTINUE**. |
+|  |  | **continuousScanningDeployment** | `019A2992-2324-7D95-8F76-8DE7146B560E` | *Read / Write (bool)* | Enables or disables continuous scanning during deployment. 0 = Limited measurements, 1 = Continuous measurements |
+|  |  | **numberMeasurementsDeployment** | `019A2993-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint32)* | Number of measurements to take during deployment. |
+|  |  | **numberMeasurementsPreDeployment** | `019A2994-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint32)* | Number of measurements to take during pre-deployment. |
+|  |  | **sampleIntervalDeployment** | `019A2995-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint32)* | Sampling interval in seconds during deployment. |
+|  |  | **sampleIntervalPreDeployment** | `019A2996-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint8)* | Sampling interval in seconds during pre-deployment. |
+
+## Command Bytes
+
+ - 0x01 (Pre-Deployment Only): Save Settings - Write settings sent via BLE to Flash memory
+ - 0x02 (Pre-Deployment Only): Continue - Continue to Pre-Deployment measurement loop
+ - 0x03 (Pre-Deployment Only): Reset Settings - Reset settings to Default in Flash memory
+ - 0x04                      : Ping Device - Sends 0xAB in Pre-Deployment and 0xCD in BLE Readout mode
+ - 0x12 (BLE Readout Only)   : Start Transfer - Sends csv log data with '\n' at end of line to Log Entry Characteristic
+
+## Default Settings
+
+ - DEFAULT_CONTINUOUS_SCANNING_DEPLOYMENT = 0 (Limited Number of Scans)  
+ - DEFAULT_NUMBER_MEASUREMENTS_DEPLOYMENT = 24  
+ - DEFAULT_NUMBER_MEASUREMENTS_PRE_DEPLOYMENT = 10  
+ - DEFAULT_SAMPLE_INTERVAL_DEPLOYMENT = 3600 (1 hour)  
+ - DEFAULT_SAMPLE_INTERVAL_PRE_DEPLOYMENT = 10 (10 seconds)  
 
 ## Useful links:
 
