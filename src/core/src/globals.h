@@ -64,6 +64,9 @@ extern FatFile fat_file;
 // Set to true when PC write to flash
 extern bool fat_fs_changed;
 
+extern const float universalGasConstant; // R = 8.314 J/(mol·K)
+extern const uint32_t faradayConstant;   // F = 96485 C/mol
+
 extern BLEService pms;
 extern BLECharacteristic pmsLogEntry;
 

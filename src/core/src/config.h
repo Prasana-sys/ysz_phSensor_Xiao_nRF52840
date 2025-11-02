@@ -11,6 +11,8 @@
 
 extern const uint8_t pHSensorADC;
 
+extern float standardCellPotential; // E0 in Nernst equation
+
 // BAT Voltage read pin at Pin 32 PIN_VBAT
 // Put VBAT_ENABLE to output sink (low) to read PIN_VBAT
 extern const uint8_t chargeLED; // P0_17 = 17  D23   GREEN CHARGE LED

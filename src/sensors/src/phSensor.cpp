@@ -1,6 +1,7 @@
 #include "phSensor.h"
 
 #include "../../core/src/config.h"
+#include "../../core/src/globals.h"
 #include "TemperatureSensor.h"
 #include "../../utils/src/tools.h"
 
@@ -9,8 +10,7 @@ void getpHValue(float& pHVal, float& VpH, float& dieTemp) {
   getTemperature(dieTemp);
   getpHVoltage(VpH);
 
-  // TODO: Use Nernst equation later to convert voltage to pH
-  pHVal = 0;
+  pHVal = (standardCellPotential - VpH) / ( (2.303 * universalGasConstant * dieTemp) / (faradayConstant) );
 
   return;
 }

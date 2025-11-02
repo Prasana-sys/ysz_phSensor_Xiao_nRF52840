@@ -27,6 +27,9 @@ FatFile fat_root;
 FatFile fat_file;
 bool fat_fs_changed = true; // // to print contents initially
 
+const float universalGasConstant = 8.314; // J/(mol·K)
+const uint32_t faradayConstant = 96485; // C/mol
+
 /* GATT Services and Characteristics UUIDs
 
  * pH Measurement Service (PMS): 019A2890-2324-7D95-8F76-8DE7146B560E
