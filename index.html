@@ -178,9 +178,9 @@ readSettingsBtn.onclick = readCurrentSettings;
 saveSettingsBtn.onclick = () => writeSettingsAndSendCommand(CMD.SAVE_SETTINGS);
 continueBtn.onclick = () => writeCommand(CMD.CONTINUE);
 resetBtn.onclick = () => { if(confirm('Reset device settings?')) writeCommand(CMD.RESET); };
-pingBtn.onclick = () => writeCommand(CMD.PING);
+pingBtn.onclick = pingDevice;
 startTransferBtn.onclick = () => writeCommand(CMD.START_TRANSFER);
-cmdPingBtn.onclick = () => writeCommand(CMD.PING);
+cmdPingBtn.onclick = pingDevice;
 downloadCsvBtn.onclick = downloadCSV;
 clearLogBtn.onclick = () => { logs=[]; renderLog(); };
 
@@ -307,6 +307,55 @@ async function writeCommand(cmdByte){
   if(!characteristics.csCmd){alert('Command characteristic not available');return;}
   try{ await characteristics.csCmd.writeValue(Uint8Array.of(cmdByte)); console.log('Command',cmdByte,'sent'); }
   catch(e){ alert('Send failed:'+e); }
+}
+
+async function pingDevice() {
+  const cmdChar = characteristics.csCmd;
+  if (!cmdChar) {
+    alert("Command characteristic not available!");
+    return;
+  }
+
+  try {
+    // Enable notifications (indications) on the Command characteristic
+    await cmdChar.startNotifications();
+
+    // Create a one-time listener for the indication
+    const responsePromise = new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        cmdChar.removeEventListener("characteristicvaluechanged", onResponse);
+        reject(new Error("No ping response within 5 seconds"));
+      }, 5000);
+
+      function onResponse(event) {
+        clearTimeout(timeout);
+        cmdChar.removeEventListener("characteristicvaluechanged", onResponse);
+        const value = event.target.value.getUint8(0);
+        console.log("Ping response:", value);
+
+        let msg;
+        if (value === 0xAB)
+          msg = "✅ Device pinged successfully — Pre-Deployment Mode (0xAB)";
+        else if (value === 0xCD)
+          msg = "✅ Device pinged successfully — BLE Readout Mode (0xCD)";
+        else
+          msg = `⚠️ Unknown ping response: 0x${value.toString(16).toUpperCase()}`;
+
+        alert(msg);
+        resolve();
+      }
+
+      cmdChar.addEventListener("characteristicvaluechanged", onResponse);
+    });
+
+    // Send Ping command (0x04)
+    await cmdChar.writeValue(Uint8Array.of(0x04));
+    console.log("Ping command sent, waiting for indication...");
+    await responsePromise;
+  } catch (err) {
+    console.error("Ping failed:", err);
+    alert("Ping failed: " + err.message);
+  }
 }
 
 function onDisconnected(){ console.log('Disconnected'); cleanup(); }

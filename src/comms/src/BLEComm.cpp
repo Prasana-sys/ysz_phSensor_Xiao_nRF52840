@@ -312,6 +312,8 @@ void ReadoutCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint
       runBLEReadoutLoop(); // Exit function to transition to sending measurements
       break;
 
+    // TODO: Add delete log file command?
+
     default:
       Serial.print("Unknown command received: 0x");
       Serial.println(cmd, HEX);

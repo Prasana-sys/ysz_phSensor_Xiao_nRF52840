@@ -3,20 +3,6 @@
 #include "../../core/src/config.h"
 #include "../../utils/src/tools.h"
 
-float getBattVoltage() {
-  uint16_t Vadc = 0;
-  float Vbatt;
-
-  // for (int i = 0; i < 16; i++) { // Averaging over 16 samples
-  //   Vadc = Vadc + analogRead(PIN_VBAT);
-  // }
-
-  // Vadc += safeAnalogRead(PIN_VBAT);
-  
-  Vbatt = (Vadc/16.0) * ((2.961 * VREF) / ADC_MAX); // Resistance ratio 2.961
-  return Vbatt;
-}
-
 void getBattVoltage(float& Vbatt) {
   uint16_t Vadc = 0;
 

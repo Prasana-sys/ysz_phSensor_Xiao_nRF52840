@@ -18,6 +18,7 @@
 
 void setup() {
 
+  // TODO: Color code each mode with LED colors
   pinMode(LED_RED, OUTPUT); // LED_BUILTIN
   pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
