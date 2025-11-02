@@ -43,12 +43,12 @@ Do not modify file structure, i.e., maintain /src/MODULE_NAME/src/FILES_HERE for
 ## State Diagrams and Flowcharts
 
 ### State Diagram
-![State Diagram](img/State_Diagram.svg "State Diagram")
+![State Diagram](img/State_Diagram.jpg "State Diagram")
 
 ### Flowcharts
-![Deployment Mode](img/Deployment_Mode.svg "Deployment Mode")
-![Pre-Deployment Mode](img/Pre_Deployment_Mode.svg "Pre-Deployment Mode")
-![BLE Readout Mode](img\BLE_Readout_Mode.svg "BLE Readout Mode")
+![Deployment Mode](img/Deployment_Mode.jpg "Deployment Mode")
+![Pre-Deployment Mode](img/Pre_Deployment_Mode.jpg "Pre-Deployment Mode")
+![BLE Readout Mode](img/BLE_Readout_Mode.jpg "BLE Readout Mode")
 
 ## GATT Services and Characteristics
 
