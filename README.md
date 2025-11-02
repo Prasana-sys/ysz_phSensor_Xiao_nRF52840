@@ -73,11 +73,13 @@ Do not modify file structure, i.e., maintain /src/MODULE_NAME/src/FILES_HERE for
 
 ## Command Bytes
 
- - 0x01 (Pre-Deployment Only): Save Settings - Write settings sent via BLE to Flash memory
- - 0x02 (Pre-Deployment Only): Continue - Continue to Pre-Deployment measurement loop
- - 0x03 (Pre-Deployment Only): Reset Settings - Reset settings to Default in Flash memory
- - 0x04                      : Ping Device - Sends 0xAB in Pre-Deployment and 0xCD in BLE Readout mode
- - 0x12 (BLE Readout Only)   : Start Transfer - Sends csv log data with '\n' at end of line to Log Entry Characteristic
+| Command Code | Mode | Description |
+|---------------|------|-------------|
+| `0x01` | Pre-Deployment Only | **Save Settings** – Write settings sent via BLE to Flash memory. |
+| `0x02` | Pre-Deployment Only | **Continue** – Continue to the Pre-Deployment measurement loop. |
+| `0x03` | Pre-Deployment Only | **Reset Settings** – Reset all configuration parameters to defaults in Flash memory. |
+| `0x04` | Both Modes | **Ping Device** – Sends `0xAB` in Pre-Deployment mode and `0xCD` in BLE Readout mode to confirm communication. |
+| `0x12` | BLE Readout Only | **Start Transfer** – Begins CSV log data transfer, each line terminated by `'\n'`, sent via the Log Entry characteristic. |
 
 ## Default Settings
 
@@ -89,8 +91,8 @@ Do not modify file structure, i.e., maintain /src/MODULE_NAME/src/FILES_HERE for
 
 ## Useful links:
 
-https://wiki.seeedstudio.com/XIAO_BLE/
-https://github.com/Seeed-Studio/Adafruit_nRF52_Arduino
+https://wiki.seeedstudio.com/XIAO_BLE/  
+https://github.com/Seeed-Studio/Adafruit_nRF52_Arduino  
 https://github.com/0hotpotman0/BLE_52840_Core
 
 ## OLD Compilation Instructions (DO NOT USE)  
