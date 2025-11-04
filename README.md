@@ -19,7 +19,8 @@ Delete local SdFat library that comes pre-installed with Arduino IDE
 Navigate to File > Preferences, and fill "Additional Boards Manager URLs" with the url below:  
 https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json  
 
-Open Boards Manager in Arduino IDE and install "Seeed nRF52 Boards" Board Support Package (BSP)  
+Open Boards Manager in Arduino IDE and install "Seeed nRF52 Boards" Board Support Package (BSP). This repo is guaranteed to work with BSP version 1.1.11.  
+
 Do not install the mbed-enabled BSP and if modifying code in this repo, only use the libraries provided in the non-mbed BSP!  
 
 After installing the board package, navigate to Tools > Board and select "Seeed XIAO nRF52840".  
@@ -31,6 +32,13 @@ Do not modify file structure, i.e., maintain /src/MODULE_NAME/src/FILES_HERE for
 2. Select correct COM port in Arduino IDE.
 3. Click “Upload”.
 4. If upload fails, double-press reset button to enter bootloader mode.
+
+## How to setup device
+Use SdFat_Format.ino script in `SdFat_Format/` directory to format QSPI flash (P25Q16H) with a new empty FAT12 filesystem. This will enable the flash to be read as a disk drive (USB Flash Drive) by computers. Follow the onscreen instructions in the serial terminal to complete the formatting.  
+
+After formatting is complete, copy the settings.ini file into the root directory of the USB Flash Drive (D:/). Do not change settings.ini file contents directly. Use the webapp to do so.  
+
+After deployment is complete make sure to plug in the XIAO to a computer to delete the log.csv file. Failure to do so will make the pre-deployment mode inaccessible.  
 
 ## Hardware Connections
 | Component | XIAO Pin | Description |
