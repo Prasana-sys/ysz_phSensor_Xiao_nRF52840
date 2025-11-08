@@ -7,6 +7,8 @@ SPIClass SPI_2(NRF_SPIM2, PIN_QSPI_IO1, PIN_QSPI_SCK, PIN_QSPI_IO0);
 void lightSleep(uint32_t sleepDuration) {
   Serial.println("Entering light sleep mode...");
 
+  digitalWrite(afeEnablePin, LOW); // Turn off AFE to save power
+
   // When 4.2V, which is the maximum battery voltage, is applied, the voltage at D0/P0.31 has a margin of more than 100mV to VDD+0.3V.
   // TLDR: Safe to set HIGH
   digitalWrite(VBAT_ENABLE, HIGH); // Set high to stop battery read
@@ -44,6 +46,8 @@ void lightSleep(uint32_t sleepDuration) {
 
   // flashTransport.runCommand(0xAB); // Release from Deep Power-down
 
+  digitalWrite(afeEnablePin, HIGH); // Turn AFE back on
+
   flash.begin(my_flash_devices, flashDevices);
   fatfs.begin(&flash);
   Serial.println("Mounted filesystem!");
@@ -61,6 +65,8 @@ void lightSleep(uint32_t sleepDuration) {
 
 void deepSleep() {
   Serial.println("Entering deep sleep mode...");
+
+  digitalWrite(afeEnablePin, LOW); // Turn off AFE to save power
 
   digitalWrite(VBAT_ENABLE, HIGH); // Set high to stop battery read
 

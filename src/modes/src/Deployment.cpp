@@ -9,6 +9,8 @@
 #include "../../utils/src/SleepManager.h"
 
 void runDeploymentState () {
+  digitalWrite(afeEnablePin, HIGH); // Enable AFE
+
   // Flash White LED to indicate entering Deployment State
   for (int i = 0; i < 3; i++) {
     digitalWrite(LED_RED, LOW);

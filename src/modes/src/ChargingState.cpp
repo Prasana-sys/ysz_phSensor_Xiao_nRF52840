@@ -6,7 +6,7 @@
 void runChargingState() {
   // Always charging when USB connected to power source (Power bank or wall outlet)
 
-  // TODO: Green Charge LED should be on automatically when USB connected
+  // Green Charge LED should be on automatically when USB connected
 
   if (TinyUSBDevice.mounted()) {
     Serial.println("TinyUSB Mass Storage External Flash active");

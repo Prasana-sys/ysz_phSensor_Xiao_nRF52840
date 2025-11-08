@@ -11,6 +11,8 @@
 #include "../../sensors/src/phSensor.h"
 
 void setupPreDeploymentState () {
+  digitalWrite(afeEnablePin, HIGH); // Enable AFE
+
   // Turn Green LED on to indicate entering Pre-Deployment State
   digitalWrite(LED_GREEN, LOW);
 

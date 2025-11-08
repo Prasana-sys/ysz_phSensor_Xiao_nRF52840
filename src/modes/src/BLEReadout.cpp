@@ -49,7 +49,8 @@ void runBLEReadoutLoop () {
 
   fat_file.close();
 
-  // TODO: Shutdown if BLE Readout complete?
+  // Will continue to stay in BLE Readout loop until shutdown
+
   // Serial.println("BLE Readout session ended.");
   // delay(1000);
   // if (Bluefruit.connected()) {

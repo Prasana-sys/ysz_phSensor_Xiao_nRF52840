@@ -26,7 +26,6 @@ void setup() {
   // initialise ADC wireing_analog_nRF52.c:73
   analogReference(AR_DEFAULT);        // default 0.6V*6=3.6V  wireing_analog_nRF52.c:73
   analogSampleTime(40);             // default 3uS　3,5,10,15,20,40
-  // TODO: Explain Sample time choice
 
   // Enable DC-DC converter
   NRF_POWER->DCDCEN = 1;            // Enable DC/DC converter for REG1 stage, switched to internal 1.3 V core voltage
