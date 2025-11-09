@@ -314,7 +314,18 @@ void ReadoutCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint
       runBLEReadoutLoop(); // Exit function to transition to sending measurements
       break;
 
-    // TODO: Add delete log file command?
+
+    case 0x13: // DELETE LOG FILE
+      Serial.println("BLE Command: DELETE LOG FILE");
+      if (fatfs.remove("/log.csv")) {
+        Serial.println("log.csv deleted successfully.");
+        chr->indicate8(0xAA);              // Acknowledge success (0xAA)
+      }
+      else {
+        Serial.println("Failed to delete log.csv or file does not exist.");
+        chr->indicate8(0xFF);              // Acknowledge failure (0xFF)
+      }
+      break;
 
     default:
       Serial.print("Unknown command received: 0x");

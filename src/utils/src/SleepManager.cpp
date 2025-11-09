@@ -1,6 +1,7 @@
 #include "SleepManager.h"
 
 #include "../../core/src/globals.h"
+#include "../../core/src/config.h"
 
 SPIClass SPI_2(NRF_SPIM2, PIN_QSPI_IO1, PIN_QSPI_SCK, PIN_QSPI_IO0);
 
@@ -61,6 +62,8 @@ void lightSleep(uint32_t sleepDuration) {
   digitalWrite(VBAT_ENABLE, LOW); // Set low to enable battery reads
 
   Serial.println("Woke up from light sleep mode.");
+
+  delay(1000); // Allow some time for AFE system to stabilize after wake-up
 }
 
 void deepSleep() {
