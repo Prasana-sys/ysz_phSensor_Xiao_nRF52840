@@ -27,6 +27,7 @@ void loadSettings() {
     char *val = trim(eq + 1);
 
     if (!strcmp(key, "continuousScanningDeployment")) continuousScanningDeployment = atoi(val);
+    else if (!strcmp(key, "startDelayDeployment")) startDelayDeployment = atol(val);
     else if (!strcmp(key, "numberMeasurementsDeployment")) numberMeasurementsDeployment = atol(val);
     else if (!strcmp(key, "numberMeasurementsPreDeployment")) numberMeasurementsPreDeployment = atol(val);
     else if (!strcmp(key, "sampleIntervalDeployment")) sampleIntervalDeployment = atol(val);
@@ -47,6 +48,9 @@ void saveSettings() {
   }
 
   snprintf(buf, sizeof(buf), "continuousScanningDeployment=%d\n", continuousScanningDeployment);
+  fat_file.write(buf);
+
+  snprintf(buf, sizeof(buf), "startDelayDeployment=%lu\n", startDelayDeployment);
   fat_file.write(buf);
 
   snprintf(buf, sizeof(buf), "numberMeasurementsDeployment=%lu\n", numberMeasurementsDeployment);
@@ -72,12 +76,14 @@ void testSettingsManager () {
 
   Serial.println("Current Configuration:");
   Serial.printf("continuousScanning = %d\n", continuousScanningDeployment);
+  Serial.printf("startDelayDeployment = %d\n", startDelayDeployment);
   Serial.printf("numMeasurements = %lu\n", numberMeasurementsDeployment);
   Serial.printf("numMeasurementsPreDeployment = %lu\n", numberMeasurementsPreDeployment);
   Serial.printf("sampleIntervalDeployment = %lu\n", sampleIntervalDeployment);
   Serial.printf("sampleInterval = %d\n", sampleIntervalPreDeployment);
 
   continuousScanningDeployment = 0; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only
+  startDelayDeployment = 5; // in seconds, Setting for Deployment Mode Only
   numberMeasurementsDeployment = 10;
   numberMeasurementsPreDeployment = 10;
   sampleIntervalDeployment = 30; // in seconds, Setting for Deployment Mode Only

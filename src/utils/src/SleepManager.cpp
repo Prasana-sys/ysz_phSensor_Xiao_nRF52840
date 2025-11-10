@@ -35,7 +35,7 @@ void lightSleep(uint32_t sleepDuration) {
 
   // digitalWrite(LED_GREEN, LOW); // Turn on GREEN LED before sleep
 
-  delay(sleepDuration * 1000); // Sleep for specified duration in seconds
+  delay((sleepDuration * 1000) - 1000); // Sleep for specified duration in seconds minus 1 second for wake-up process
 
   // digitalWrite(LED_GREEN, HIGH); // Turn off GREEN LED after wake-up
 

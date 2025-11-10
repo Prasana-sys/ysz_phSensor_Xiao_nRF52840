@@ -47,6 +47,7 @@ const uint32_t faradayConstant = 96485; // C/mol
  * numberMeasurementsPreDeployment (uint32) (Read / Write) : 019A2994-2324-7D95-8F76-8DE7146B560E
  * sampleIntervalDeployment (uint32) (Read / Write) : 019A2995-2324-7D95-8F76-8DE7146B560E
  * sampleIntervalPreDeployment (uint8) (Read / Write) : 019A2996-2324-7D95-8F76-8DE7146B560E
+ * startDelayDeployment (uint32) (Read / Write) : 019A2997-2324-7D95-8F76-8DE7146B560E
 
 */
 
@@ -140,8 +141,15 @@ const uint8_t CS_UUID_SAMPLEINTERVALPREDEPLOY_CHAR[] =
   0x95, 0x7D, 0x24, 0x23, 0x96, 0x29, 0x9A, 0x01 
 };
 
+const uint8_t CS_UUID_STARTDELAYDEPLOY_CHAR[] = 
+{ 
+  0x0E, 0x56, 0x6B, 0x14, 0xE7, 0x8D, 0x76, 0x8F, 
+  0x95, 0x7D, 0x24, 0x23, 0x97, 0x29, 0x9A, 0x01 
+};
+
 BLEService cs(CS_UUID_SERVICE);
 BLECharacteristic csCommand(CS_UUID_COMMAND_CHAR);
+BLECharacteristic csStartDelayDeploy(CS_UUID_STARTDELAYDEPLOY_CHAR);
 BLECharacteristic csContScanDeploy(CS_UUID_CONTSCANDEPLOY_CHAR);
 BLECharacteristic csNumMeasDeploy(CS_UUID_NUMMEASDEPLOY_CHAR);
 BLECharacteristic csNumMeasPreDeploy(CS_UUID_NUMMEASPREDEPLOY_CHAR);

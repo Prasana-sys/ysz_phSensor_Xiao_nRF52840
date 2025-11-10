@@ -16,6 +16,7 @@ const uint8_t deploymentSwitch = D1;
 // const uint8_t stagingSwitch = D2;
 
 bool continuousScanningDeployment = DEFAULT_CONTINUOUS_SCANNING_DEPLOYMENT; // Default = 0
+uint32_t startDelayDeployment = DEFAULT_START_DELAY_DEPLOYMENT; // Default = 600
 uint32_t numberMeasurementsDeployment = DEFAULT_NUMBER_MEASUREMENTS_DEPLOYMENT; // Default = 24
 uint32_t numberMeasurementsPreDeployment = DEFAULT_NUMBER_MEASUREMENTS_PRE_DEPLOYMENT; // Default = 10
 uint32_t sampleIntervalDeployment = DEFAULT_SAMPLE_INTERVAL_DEPLOYMENT; // Default = 3600

@@ -90,6 +90,7 @@ After deployment is complete make sure to plug in the XIAO to a computer to dele
 |  |  | **numberMeasurementsPreDeployment** | `019A2994-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint32)* | Number of measurements to take during pre-deployment. |
 |  |  | **sampleIntervalDeployment** | `019A2995-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint32)* | Sampling interval in seconds during deployment. |
 |  |  | **sampleIntervalPreDeployment** | `019A2996-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint8)* | Sampling interval in seconds during pre-deployment. |
+|  |  | **startDelayDeployment** | `019A2997-2324-7D95-8F76-8DE7146B560E` | *Read / Write (uint32)* | Delay in seconds before taking first measurement in deployment. |
 
 ## Command Bytes
 
@@ -104,6 +105,7 @@ After deployment is complete make sure to plug in the XIAO to a computer to dele
 ## Default Settings
 
  - DEFAULT_CONTINUOUS_SCANNING_DEPLOYMENT = 0 (Limited Number of Scans)  
+ - DEFAULT_START_DELAY_DEPLOYMENT = 600 (10 minutes)
  - DEFAULT_NUMBER_MEASUREMENTS_DEPLOYMENT = 24  
  - DEFAULT_NUMBER_MEASUREMENTS_PRE_DEPLOYMENT = 10  
  - DEFAULT_SAMPLE_INTERVAL_DEPLOYMENT = 3600 (1 hour)  

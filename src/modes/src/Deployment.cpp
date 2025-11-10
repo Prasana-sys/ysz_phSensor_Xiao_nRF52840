@@ -27,14 +27,19 @@ void runDeploymentState () {
 
   Serial.println("Current Configuration:");
   Serial.printf("continuousScanningDeployment = %d\n", continuousScanningDeployment);
+  Serial.printf("startDelayDeployment = %lu\n", startDelayDeployment);
   Serial.printf("numberMeasurementsDeployment = %lu\n", numberMeasurementsDeployment);
   Serial.printf("numberMeasurementsPreDeployment = %lu\n", numberMeasurementsPreDeployment);
   Serial.printf("sampleIntervalDeployment = %lu\n", sampleIntervalDeployment);
   Serial.printf("sampleIntervalPreDeployment = %d\n", sampleIntervalPreDeployment);
 
-  // TODO: add deployment start delay setting?
-
   const uint32_t start_ms = millis();
+
+  // Start Delay before first measurement
+  if (startDelayDeployment > 0) {
+    Serial.printf("Starting delay of %lu seconds before first measurement...\n", startDelayDeployment);
+    lightSleep(startDelayDeployment);
+  }
 
   if (!continuousScanningDeployment){ // Limited Scanning
     for (int sample = 0; sample < numberMeasurementsDeployment; sample++) {

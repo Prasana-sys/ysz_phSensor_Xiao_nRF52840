@@ -45,6 +45,13 @@ void setupServicesPreDeployment() {
   csContScanDeploy.write8(continuousScanningDeployment ? 0x01 : 0x00);
   csContScanDeploy.setWriteCallback(PreDeploymentContScanDeployWriteCallback);
 
+  csStartDelayDeploy.setProperties(CHR_PROPS_READ | CHR_PROPS_WRITE | CHR_PROPS_INDICATE);
+  csStartDelayDeploy.setPermission(SECMODE_OPEN, SECMODE_OPEN);
+  csStartDelayDeploy.setMaxLen(4);
+  csStartDelayDeploy.begin();
+  csStartDelayDeploy.write32(startDelayDeployment);
+  csStartDelayDeploy.setWriteCallback(PreDeploymentStartDelayDeployWriteCallback);
+
   csNumMeasDeploy.setProperties(CHR_PROPS_READ | CHR_PROPS_WRITE | CHR_PROPS_INDICATE);
   csNumMeasDeploy.setPermission(SECMODE_OPEN, SECMODE_OPEN);
   csNumMeasDeploy.setMaxLen(4);
@@ -212,6 +219,7 @@ void PreDeploymentCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr
       Serial.println("BLE Command: SAVE SETTINGS");
       saveSettings();
       csContScanDeploy.write8(continuousScanningDeployment ? 0x01 : 0x00);
+      csStartDelayDeploy.write32(startDelayDeployment);
       csNumMeasDeploy.write32(numberMeasurementsDeployment);
       csNumMeasPreDeploy.write32(numberMeasurementsPreDeployment);
       csSampleIntervalDeploy.write32(sampleIntervalDeployment);
@@ -227,12 +235,14 @@ void PreDeploymentCommandWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr
     case 0x03:  // RESET SETTINGS
       Serial.println("BLE Command: RESET SETTINGS TO DEFAULTS");
       continuousScanningDeployment = DEFAULT_CONTINUOUS_SCANNING_DEPLOYMENT;
+      startDelayDeployment = DEFAULT_START_DELAY_DEPLOYMENT;
       numberMeasurementsDeployment = DEFAULT_NUMBER_MEASUREMENTS_DEPLOYMENT;
       numberMeasurementsPreDeployment = DEFAULT_NUMBER_MEASUREMENTS_PRE_DEPLOYMENT;
       sampleIntervalDeployment = DEFAULT_SAMPLE_INTERVAL_DEPLOYMENT;
       sampleIntervalPreDeployment = DEFAULT_SAMPLE_INTERVAL_PRE_DEPLOYMENT;
       saveSettings();          // reload defaults
       csContScanDeploy.write8(continuousScanningDeployment ? 0x01 : 0x00);
+      csStartDelayDeploy.write32(startDelayDeployment);
       csNumMeasDeploy.write32(numberMeasurementsDeployment);
       csNumMeasPreDeploy.write32(numberMeasurementsPreDeployment);
       csSampleIntervalDeploy.write32(sampleIntervalDeployment);
@@ -258,6 +268,16 @@ void PreDeploymentContScanDeployWriteCallback(uint16_t conn_hdl, BLECharacterist
   Serial.println(continuousScanningDeployment);
   chr->indicate8(0xAA);              // Acknowledge (0xAA)
   chr->write8(continuousScanningDeployment ? 0x01 : 0x00);
+}
+
+void PreDeploymentStartDelayDeployWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len) {
+  if (len > 4) return;
+  uint32_t value = *((uint32_t*)data);
+  startDelayDeployment = value;
+  Serial.print("Updated startDelayDeployment: ");
+  Serial.println(startDelayDeployment);
+  chr->indicate8(0xAA);              // Acknowledge (0xAA)
+  chr->write32(startDelayDeployment);
 }
 
 void PreDeploymentNumMeasDeployWriteCallback(uint16_t conn_hdl, BLECharacteristic* chr, uint8_t* data, uint16_t len) {

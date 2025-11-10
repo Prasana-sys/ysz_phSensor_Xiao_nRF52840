@@ -77,5 +77,6 @@ extern BLECharacteristic csNumMeasDeploy;
 extern BLECharacteristic csNumMeasPreDeploy;
 extern BLECharacteristic csSampleIntervalDeploy;
 extern BLECharacteristic csSampleIntervalPreDeploy;
+extern BLECharacteristic csStartDelayDeploy;
 
 #endif // GLOBALS_H

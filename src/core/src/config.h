@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #define DEFAULT_CONTINUOUS_SCANNING_DEPLOYMENT 0
+#define DEFAULT_START_DELAY_DEPLOYMENT 600
 #define DEFAULT_NUMBER_MEASUREMENTS_DEPLOYMENT 24
 #define DEFAULT_NUMBER_MEASUREMENTS_PRE_DEPLOYMENT 10
 #define DEFAULT_SAMPLE_INTERVAL_DEPLOYMENT 3600
@@ -27,6 +28,7 @@ extern const uint8_t deploymentSwitch;
 
 // Default parameters for measurement readings
 extern bool continuousScanningDeployment; // 0 = Limited measurements, 1 = Continuous measurements, Setting for Deployment Mode Only
+extern uint32_t startDelayDeployment; // in seconds, Setting for Deployment Mode Only
 extern uint32_t numberMeasurementsDeployment;
 extern uint32_t numberMeasurementsPreDeployment;
 extern uint32_t sampleIntervalDeployment; // in seconds, Setting for Deployment Mode Only
