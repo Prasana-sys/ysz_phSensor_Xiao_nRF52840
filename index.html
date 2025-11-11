@@ -62,23 +62,50 @@
     </div>
 
     <div style="margin-top:12px">
-      <label>continuousScanningDeployment (0 or 1)</label>
-      <input id="contScanInput" type="number" min="0" max="1" placeholder="leave blank to keep device value">
+      <div class="row">
+        <div style="flex:1">
+          <label>continuousScanningDeployment (0 or 1)</label>
+          <input id="contScanInput" type="number" min="0" max="1"
+                style="width:70%;"
+                placeholder="leave blank to keep device value">
+        </div>
+        <div style="flex:1">
+          <label>startDelayDeployment (uint32 seconds)</label>
+          <input id="startDelayDeployInput" type="number"
+                style="width:70%;"
+                placeholder="leave blank to keep device value">
+        </div>
+      </div>
 
-      <label>numberMeasurementsDeployment (uint32)</label>
-      <input id="numMeasDeployInput" type="number" placeholder="leave blank to keep device value">
+      <div class="row">
+        <div style="flex:1">
+          <label>numberMeasurementsDeployment (uint32)</label>
+          <input id="numMeasDeployInput" type="number"
+                style="width:70%;"
+                placeholder="leave blank to keep device value">
+        </div>
+        <div style="flex:1">
+          <label>sampleIntervalDeployment (uint32 seconds)</label>
+          <input id="sampleIntervalDeployInput" type="number"
+                style="width:70%;"
+                placeholder="leave blank to keep device value">
+        </div>
+      </div>
 
-      <label>numberMeasurementsPreDeployment (uint32)</label>
-      <input id="numMeasPreDeployInput" type="number" placeholder="leave blank to keep device value">
-
-      <label>sampleIntervalDeployment (uint32 seconds)</label>
-      <input id="sampleIntervalDeployInput" type="number" placeholder="leave blank to keep device value">
-
-      <label>sampleIntervalPreDeployment (uint8 seconds)</label>
-      <input id="sampleIntervalPreDeployInput" type="number" min="0" max="255" placeholder="leave blank to keep device value">
-
-      <label>startDelayDeployment (uint32 seconds)</label>
-      <input id="startDelayDeployInput" type="number" placeholder="leave blank to keep device value">
+      <div class="row">
+        <div style="flex:1">
+          <label>numberMeasurementsPreDeployment (uint32)</label>
+          <input id="numMeasPreDeployInput" type="number"
+                style="width:70%;"
+                placeholder="leave blank to keep device value">
+        </div>
+        <div style="flex:1">
+          <label>sampleIntervalPreDeployment (uint8 seconds)</label>
+          <input id="sampleIntervalPreDeployInput" type="number" min="0" max="255"
+                style="width:70%;"
+                placeholder="leave blank to keep device value">
+        </div>
+      </div>
     </div>
 
     <div class="controls" style="margin-top:12px">
