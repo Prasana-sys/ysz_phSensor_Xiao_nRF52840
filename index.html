@@ -402,22 +402,35 @@ function downloadCSV(){
 }
 
 function validateParams() {
-  const startDelay = Number(startDelayDeployInput.value);
-  const numDep = Number(numMeasDeployInput.value);
-  const numPre = Number(numMeasPreDeployInput.value);
-  const sampDep = Number(sampleIntervalDeployInput.value);
-  const sampPre = Number(sampleIntervalPreDeployInput.value);
+  const params = [
+    { el: startDelayDeployInput, min: 0, max: 86400 },
+    { el: numMeasDeployInput, min: 1, max: 100000 },
+    { el: numMeasPreDeployInput, min: 1, max: 100000 },
+    { el: sampleIntervalDeployInput, min: 1, max: 3600 },
+    { el: sampleIntervalPreDeployInput, min: 1, max: 255 },
+  ];
 
-  const valid =
-    (isNaN(startDelay) || (startDelay >= 0 && startDelay <= 86400)) &&
-    (isNaN(numDep) || (numDep >= 1 && numDep <= 100000)) &&
-    (isNaN(numPre) || (numPre >= 1 && numPre <= 100000)) &&
-    (isNaN(sampDep) || (sampDep >= 1 && sampDep <= 3600)) &&
-    (isNaN(sampPre) || (sampPre >= 1 && sampPre <= 255));
+  let allValid = true;
 
-  saveSettingsBtn.disabled = !valid;
-  saveSettingsBtn.style.opacity = valid ? "1" : "0.5";
-  saveSettingsBtn.style.cursor = valid ? "pointer" : "not-allowed";
+  for (const p of params) {
+    const val = Number(p.el.value);
+    const empty = p.el.value === "";
+    const valid = empty || (!isNaN(val) && val >= p.min && val <= p.max);
+
+    if (!valid) {
+      p.el.style.borderColor = "red";
+      p.el.style.boxShadow = "0 0 4px rgba(255,0,0,0.4)";
+    } else {
+      p.el.style.borderColor = "#ccc";
+      p.el.style.boxShadow = "none";
+    }
+
+    if (!valid) allValid = false;
+  }
+
+  saveSettingsBtn.disabled = !allValid;
+  saveSettingsBtn.style.opacity = allValid ? "1" : "0.5";
+  saveSettingsBtn.style.cursor = allValid ? "pointer" : "not-allowed";
 }
 
 // monitor changes
