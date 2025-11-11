@@ -64,46 +64,37 @@
     <div style="margin-top:12px">
       <div class="row">
         <div style="flex:1">
-          <label>continuousScanningDeployment (0 or 1)</label>
-          <input id="contScanInput" type="number" min="0" max="1"
-                style="width:70%;"
-                placeholder="leave blank to keep device value">
+          <label>Scanning Mode</label>
+          <select id="contScanSelect" style="width:70%;">
+            <option value="0">Limited Scanning</option>
+            <option value="1">Continuous Scanning</option>
+          </select>
         </div>
         <div style="flex:1">
           <label>startDelayDeployment (uint32 seconds)</label>
-          <input id="startDelayDeployInput" type="number"
-                style="width:70%;"
-                placeholder="leave blank to keep device value">
+          <input id="startDelayDeployInput" type="number" min="0" max="86400" style="width:70%;" placeholder="0–86400 seconds">
         </div>
       </div>
 
       <div class="row">
         <div style="flex:1">
           <label>numberMeasurementsDeployment (uint32)</label>
-          <input id="numMeasDeployInput" type="number"
-                style="width:70%;"
-                placeholder="leave blank to keep device value">
+          <input id="numMeasDeployInput" type="number" min="1" max="100000" style="width:70%;" placeholder="1–100000">
         </div>
         <div style="flex:1">
           <label>sampleIntervalDeployment (uint32 seconds)</label>
-          <input id="sampleIntervalDeployInput" type="number"
-                style="width:70%;"
-                placeholder="leave blank to keep device value">
+          <input id="sampleIntervalDeployInput" type="number" min="1" max="3600" style="width:70%;" placeholder="1–3600 seconds">
         </div>
       </div>
 
       <div class="row">
         <div style="flex:1">
           <label>numberMeasurementsPreDeployment (uint32)</label>
-          <input id="numMeasPreDeployInput" type="number"
-                style="width:70%;"
-                placeholder="leave blank to keep device value">
+          <input id="numMeasPreDeployInput" type="number" min="1" max="100000" style="width:70%;" placeholder="1–100000">
         </div>
         <div style="flex:1">
           <label>sampleIntervalPreDeployment (uint8 seconds)</label>
-          <input id="sampleIntervalPreDeployInput" type="number" min="0" max="255"
-                style="width:70%;"
-                placeholder="leave blank to keep device value">
+          <input id="sampleIntervalPreDeployInput" type="number" min="1" max="255" style="width:70%;" placeholder="1–255 seconds">
         </div>
       </div>
     </div>
@@ -189,7 +180,7 @@ const readoutPanel = document.getElementById('readoutPanel');
 const connectionStatus = document.getElementById('connectionStatus');
 const logArea = document.getElementById('logArea');
 
-const contScanInput = document.getElementById('contScanInput');
+const contScanSelect = document.getElementById('contScanSelect');
 const numMeasDeployInput = document.getElementById('numMeasDeployInput');
 const numMeasPreDeployInput = document.getElementById('numMeasPreDeployInput');
 const sampleIntervalDeployInput = document.getElementById('sampleIntervalDeployInput');
@@ -317,7 +308,7 @@ function renderLog(){
 async function readCurrentSettings(){
   if(!characteristics.csContScan){alert('Config not available');return;}
   try{
-    contScanInput.value=(await characteristics.csContScan.readValue()).getUint8(0);
+    contScanSelect.value = (await characteristics.csContScan.readValue()).getUint8(0);
     startDelayDeployInput.value = (await characteristics.csStartDelayDeploy.readValue()).getUint32(0,true);
     numMeasDeployInput.value=(await characteristics.csNumMeasDeploy.readValue()).getUint32(0,true);
     numMeasPreDeployInput.value=(await characteristics.csNumMeasPre.readValue()).getUint32(0,true);
@@ -329,7 +320,7 @@ async function readCurrentSettings(){
 
 async function writeSettingsAndSendCommand(cmdByte){
   try{
-    if(contScanInput.value!=='') await characteristics.csContScan.writeValue(Uint8Array.of(Number(contScanInput.value)));
+    await characteristics.csContScan.writeValue(Uint8Array.of(Number(contScanSelect.value)));
     if(startDelayDeployInput.value!==''){const b=new ArrayBuffer(4);new DataView(b).setUint32(0,Number(startDelayDeployInput.value),true);await characteristics.csStartDelayDeploy.writeValue(b);}
     if(numMeasDeployInput.value!==''){const b=new ArrayBuffer(4);new DataView(b).setUint32(0,Number(numMeasDeployInput.value),true);await characteristics.csNumMeasDeploy.writeValue(b);}
     if(numMeasPreDeployInput.value!==''){const b=new ArrayBuffer(4);new DataView(b).setUint32(0,Number(numMeasPreDeployInput.value),true);await characteristics.csNumMeasPre.writeValue(b);}
@@ -409,6 +400,31 @@ function downloadCSV(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='ysz_ph_logs.csv';a.click();URL.revokeObjectURL(url);
 }
+
+function validateParams() {
+  const startDelay = Number(startDelayDeployInput.value);
+  const numDep = Number(numMeasDeployInput.value);
+  const numPre = Number(numMeasPreDeployInput.value);
+  const sampDep = Number(sampleIntervalDeployInput.value);
+  const sampPre = Number(sampleIntervalPreDeployInput.value);
+
+  const valid =
+    (isNaN(startDelay) || (startDelay >= 0 && startDelay <= 86400)) &&
+    (isNaN(numDep) || (numDep >= 1 && numDep <= 100000)) &&
+    (isNaN(numPre) || (numPre >= 1 && numPre <= 100000)) &&
+    (isNaN(sampDep) || (sampDep >= 1 && sampDep <= 3600)) &&
+    (isNaN(sampPre) || (sampPre >= 1 && sampPre <= 255));
+
+  saveSettingsBtn.disabled = !valid;
+  saveSettingsBtn.style.opacity = valid ? "1" : "0.5";
+  saveSettingsBtn.style.cursor = valid ? "pointer" : "not-allowed";
+}
+
+// monitor changes
+[startDelayDeployInput, numMeasDeployInput, numMeasPreDeployInput,
+ sampleIntervalDeployInput, sampleIntervalPreDeployInput]
+.forEach(el => el.addEventListener("input", validateParams));
+
 </script>
 </body>
 </html>
