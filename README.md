@@ -101,6 +101,7 @@ After deployment is complete make sure to plug in the XIAO to a computer to dele
 | `0x03` | Pre-Deployment Only | **Reset Settings** – Reset all configuration parameters to defaults in Flash memory. |
 | `0x04` | Both Modes | **Ping Device** – Sends `0xAB` in Pre-Deployment mode and `0xCD` in BLE Readout mode to confirm communication. |
 | `0x12` | BLE Readout Only | **Start Transfer** – Begins CSV log data transfer, each line terminated by `'\n'`, sent via the Log Entry characteristic. |
+| `0x13` | BLE Readout Only | **Delete Log File** – Deletes CSV log file stored in flash. |
 
 ## Default Settings
 
