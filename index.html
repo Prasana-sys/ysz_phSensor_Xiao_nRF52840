@@ -198,7 +198,7 @@ const clearLogBtn = document.getElementById('clearLogBtn');
 
 connectBtn.onclick = async () => { try { await connectToDevice(); } catch(e){ alert('Connection failed: '+e); } };
 disconnectBtn.onclick = () => { if(device && device.gatt.connected) device.gatt.disconnect(); cleanup(); };
-readSettingsBtn.onclick = readCurrentSettings;
+readSettingsBtn.onclick = async () => { await readCurrentSettings(); validateParams();};
 saveSettingsBtn.onclick = () => writeSettingsAndSendCommand(CMD.SAVE_SETTINGS);
 continueBtn.onclick = () => writeCommand(CMD.CONTINUE);
 resetBtn.onclick = () => { if(confirm('Reset device settings?')) writeCommand(CMD.RESET); };
@@ -338,7 +338,7 @@ async function writeCommand(cmdByte){
 }
 
 async function pingDevice() {
-  const cmdChar = characteristics.csCmd;
+  const cmdChar = characteristics.csCmd || characteristics.pmsCmd;
   if (!cmdChar) {
     alert("Command characteristic not available!");
     return;
@@ -393,6 +393,34 @@ function cleanup(){
   predeployPanel.classList.add('hidden'); readoutPanel.classList.add('hidden');
   connectBtn.classList.remove('hidden'); disconnectBtn.classList.add('hidden');
   device=null; server=null; characteristics={};
+
+  // logs = [];
+  // logArea.value = ''; // will clear logs on disconnect
+
+  // Clear all parameter fields when disconnected
+  const fieldsToClear = [
+    document.getElementById('startDelayDeployInput'),
+    document.getElementById('numMeasDeployInput'),
+    document.getElementById('numMeasPreDeployInput'),
+    document.getElementById('sampleIntervalDeployInput'),
+    document.getElementById('sampleIntervalPreDeployInput'),
+  ];
+  const dropdown = document.getElementById('contScanSelect');
+
+  fieldsToClear.forEach(el => {
+    if (el) el.value = '';
+    el?.style.removeProperty('borderColor');
+    el?.style.removeProperty('boxShadow');
+  });
+
+  if (dropdown) dropdown.selectedIndex = 1;
+
+  // Reset buttons and state
+  connectBtn.disabled = false;
+  disconnectBtn.disabled = true;
+  saveSettingsBtn.disabled = true;
+  saveSettingsBtn.style.opacity = "0.5";
+  saveSettingsBtn.style.cursor = "not-allowed";
 }
 function downloadCSV(){
   if(!logs.length){alert('No logs');return;}
@@ -437,6 +465,8 @@ function validateParams() {
 [startDelayDeployInput, numMeasDeployInput, numMeasPreDeployInput,
  sampleIntervalDeployInput, sampleIntervalPreDeployInput]
 .forEach(el => el.addEventListener("input", validateParams));
+
+validateParams();
 
 </script>
 </body>
